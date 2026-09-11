@@ -1,0 +1,30 @@
+{
+  "_hinweis": "Vergangene Winter: Füllstand am 1. November ('start') und Tiefstand des Winters ('tief'), jeweils in Prozent. Werte mit 'geschaetzt': true sind aus Presseberichten grob rekonstruiert und sollten mit agsi.gie.eu geprüft werden. Mit AGSI-Schlüssel (Anleitung Teil I) werden alle Winter automatisch exakt berechnet und diese Liste wird nicht mehr verwendet.",
+  "schwelle_mangellage_prozent": 20,
+  "profil": [
+    { "tag": "11-01", "anteil": 0.00 },
+    { "tag": "12-01", "anteil": 0.12 },
+    { "tag": "01-01", "anteil": 0.35 },
+    { "tag": "02-01", "anteil": 0.65 },
+    { "tag": "03-01", "anteil": 0.90 },
+    { "tag": "04-01", "anteil": 1.00 }
+  ],
+  "_profil_hinweis": "Anteil der gesamten Winterentnahme, der bis zum jeweiligen Tag typischerweise erfolgt ist. Wird nur gebraucht, solange keine Tageswerte je Winter vorliegen.",
+  "winter": [
+    { "saison": "2011/12", "start": 95, "tief": 26, "geschaetzt": true },
+    { "saison": "2012/13", "start": 92, "tief": 18, "geschaetzt": true },
+    { "saison": "2013/14", "start": 97, "tief": 52, "geschaetzt": true },
+    { "saison": "2014/15", "start": 93, "tief": 33, "geschaetzt": true },
+    { "saison": "2015/16", "start": 95, "tief": 34, "geschaetzt": true },
+    { "saison": "2016/17", "start": 92, "tief": 26, "geschaetzt": true },
+    { "saison": "2017/18", "start": 92, "tief": 14, "geschaetzt": true },
+    { "saison": "2018/19", "start": 91, "tief": 41, "geschaetzt": true },
+    { "saison": "2019/20", "start": 98, "tief": 63, "geschaetzt": true },
+    { "saison": "2020/21", "start": 95, "tief": 26, "geschaetzt": true },
+    { "saison": "2021/22", "start": 72, "tief": 25, "geschaetzt": true },
+    { "saison": "2022/23", "start": 99, "tief": 64 },
+    { "saison": "2023/24", "start": 99, "tief": 66, "geschaetzt": true },
+    { "saison": "2024/25", "start": 98, "tief": 29 },
+    { "saison": "2025/26", "start": 75, "tief": 21 }
+  ]
+}
