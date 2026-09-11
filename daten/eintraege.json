@@ -1,5 +1,24 @@
 [
   {
+    "id": 6,
+    "datum": "2026-09-09",
+    "eingereicht": "2026-09-11",
+    "wer": "Friedrich Merz",
+    "funktion": "",
+    "zitat": "selbstverständlich sprechen wir mit denen, die die Gasspeicher befüllen",
+    "sinngemaess": false,
+    "kategorie": "Worthülse",
+    "kontext": "Weil \"sprechen mit denen\", die Gasspeicher nicht füllt, siehe Rheden, nur Auffordern unter Zwang zum Füllen füllt die Speicher.",
+    "quellen": [],
+    "youtube": {
+      "url": "https://www.youtube.com/watch?v=Arr_yLvpzLk",
+      "start": 498,
+      "ende": 562
+    },
+    "dokumente": [],
+    "meldung_id": "adc547665a2c41749fd9c577"
+  },
+  {
     "id": 5,
     "datum": "2026-09-09",
     "eingereicht": "2026-09-11",
