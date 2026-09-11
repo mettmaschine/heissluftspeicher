@@ -2,6 +2,7 @@
 // Tiefstand und den Entnahmeverlauf an festen Stichtagen. Läuft nur mit gesetzter Umgebungsvariable AGSI_API_KEY.
 
 const STICHTAGE = ['11-15', '12-01', '12-15', '01-01', '01-15', '02-01', '02-15', '03-01', '03-15', '04-01', '04-15'];
+const SOMMERTAGE = ['03-15', '04-01', '04-15', '05-01', '05-15', '06-01', '06-15', '07-01', '07-15', '08-01', '08-15', '09-01', '09-15', '10-01', '10-15', '11-01'];
 
 exports.handler = async function () {
   const schluessel = process.env.AGSI_API_KEY;
@@ -46,7 +47,16 @@ exports.handler = async function () {
       winter.push({ saison: jahr + '/' + String(jahr + 1).slice(2), start: Math.round(start * 10) / 10, tief: Math.round(tief * 10) / 10, tief_datum: tiefDatum, verlauf: verlauf });
     }
     if (winter.length < 8) return antwort(502, { fehler: 'Zu wenige abgeschlossene Winter berechnet (' + winter.length + ').' });
-    return antwort(200, { quelle: 'GIE AGSI+, Tageswerte seit 2011 (automatisch berechnet)', winter: winter }, 86400);
+    // Übliche Einspeicherung vom Stichtag bis zum 1. November: Mittel über alle Jahre mit vollständigen Daten
+    const sommerRest = SOMMERTAGE.map(mmdd => {
+      let summe = 0, anzahl = 0;
+      for (let jahr = 2011; jahr < heute.getUTCFullYear(); jahr++) {
+        const a = wert(jahr + '-' + mmdd), b = wert(jahr + '-11-01');
+        if (a != null && b != null) { summe += Math.max(0, b - a); anzahl++; }
+      }
+      return { tag: mmdd, pp: anzahl ? Math.round(summe / anzahl * 10) / 10 : null };
+    }).filter(p => p.pp != null);
+    return antwort(200, { quelle: 'GIE AGSI+, Tageswerte seit 2011 (automatisch berechnet)', winter: winter, sommer_rest: sommerRest }, 86400);
   } catch (e) {
     return antwort(502, { fehler: String(e && e.message || e) });
   }

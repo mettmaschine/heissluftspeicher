@@ -256,3 +256,4 @@ textarea { resize: vertical; }
 .besucher { font-size: 1rem; }
 .besucher b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
 .hilfe-hell { color: #9fb0c2; font-size: .85rem; }
+.verlauf .flaeche.rot { fill: rgba(200, 16, 46, .08); }
