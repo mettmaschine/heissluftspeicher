@@ -240,3 +240,11 @@ textarea { resize: vertical; }
 .strom-text { max-width: 70ch; }
 .strom-text p { margin: 0 0 1rem; }
 .quellen-hinweis { font-size: .9rem; color: var(--grau); max-width: 70ch; }
+
+.verlauf .gitter.stark { stroke: #d5cfbf; }
+.verlauf .druckzone { fill: rgba(242, 106, 27, .07); }
+.verlauf .druckzone-text { fill: #b4561a; font-size: 11px; }
+.verlauf .ziel-text.klein { font-size: 11px; }
+.verlauf .ziel-linie.marke { stroke-width: 3; }
+.verlauf .punkt.tief { fill: var(--rot); stroke: #fff; }
+.verlauf .letzter.tief { fill: var(--rot); font-size: 12px; }

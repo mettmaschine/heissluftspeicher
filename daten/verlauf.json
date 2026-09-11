@@ -1,5 +1,5 @@
 {
-  "_hinweis": "Ein Punkt je Zeile. Neue Werte in 'punkte' unten anhängen (Komma nach der vorherigen Zeile nicht vergessen). 'vorjahr' enthält die Saison davor; sie wird im Diagramm um ein Jahr verschoben darübergelegt.",
+  "_hinweis": "Ein Punkt je Zeile. Neue Werte in 'punkte' unten anhängen (Komma nach der vorherigen Zeile nicht vergessen). 'vorjahr' ist die Saison davor, sie wird um ein Jahr verschoben darübergelegt. 'marken' sind Stichtage mit Vorgabe. Zwischen den Punkten wird glatt interpoliert; mit AGSI-Schlüssel (Anleitung Teil I) werden automatisch Tageswerte verwendet.",
   "quelle": "Werte aus Presseberichten, INES, Bundesnetzagentur, SMARD und Bundestagsdrucksache 21/3452 (Basis: GIE AGSI+). Tagesgenaue Werte: agsi.gie.eu.",
   "punkte": [
     {
@@ -77,12 +77,20 @@
       "prozent": 98.0
     },
     {
+      "datum": "2025-01-01",
+      "prozent": 80.0
+    },
+    {
       "datum": "2025-01-08",
       "prozent": 77.0
     },
     {
       "datum": "2025-02-01",
-      "prozent": 50.0
+      "prozent": 56.0
+    },
+    {
+      "datum": "2025-02-14",
+      "prozent": 37.0
     },
     {
       "datum": "2025-04-01",
@@ -99,6 +107,13 @@
     {
       "datum": "2025-09-08",
       "prozent": 74.1
+    }
+  ],
+  "marken": [
+    {
+      "datum": "2026-02-01",
+      "prozent": 30,
+      "text": "Vorgabe 1. Februar: 30 %"
     }
   ]
 }

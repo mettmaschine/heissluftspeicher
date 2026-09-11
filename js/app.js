@@ -171,14 +171,147 @@
 
   /* ------------------------------------------------------------- Verlauf */
 
+  // Monotone kubische Interpolation (Fritsch–Carlson): glatte Kurve durch die Messpunkte,
+  // ohne Überschwinger, also ohne erfundene Zwischenhochs oder -tiefs.
+  function interpolator(pts) {
+    var n = pts.length;
+    if (n < 2) return function () { return n ? pts[0].v : 0; };
+    var xs = pts.map(function (p) { return +p.t; }), ys = pts.map(function (p) { return p.v; });
+    var d = [], m = [], i;
+    for (i = 0; i < n - 1; i++) d.push((ys[i + 1] - ys[i]) / (xs[i + 1] - xs[i]));
+    m[0] = d[0]; m[n - 1] = d[n - 2];
+    for (i = 1; i < n - 1; i++) m[i] = (d[i - 1] * d[i] <= 0) ? 0 : (d[i - 1] + d[i]) / 2;
+    for (i = 0; i < n - 1; i++) {
+      if (d[i] === 0) { m[i] = 0; m[i + 1] = 0; continue; }
+      var a = m[i] / d[i], b = m[i + 1] / d[i], q = a * a + b * b;
+      if (q > 9) { var tau = 3 / Math.sqrt(q); m[i] = tau * a * d[i]; m[i + 1] = tau * b * d[i]; }
+    }
+    return function (t) {
+      t = +t;
+      if (t <= xs[0]) return ys[0];
+      if (t >= xs[n - 1]) return ys[n - 1];
+      var lo = 0, hi = n - 1;
+      while (hi - lo > 1) { var mid = (lo + hi) >> 1; if (xs[mid] <= t) lo = mid; else hi = mid; }
+      var h = xs[hi] - xs[lo], u = (t - xs[lo]) / h;
+      return (1 + 2 * u) * (1 - u) * (1 - u) * ys[lo] + u * (1 - u) * (1 - u) * h * m[lo] + u * u * (3 - 2 * u) * ys[hi] + u * u * (u - 1) * h * m[hi];
+    };
+  }
+
+  // Glatter SVG-Pfad durch Punkte {t, v}; x und y sind die Achsenfunktionen.
+  function glattPfad(pts, x, y) {
+    if (pts.length < 2) return '';
+    var f = interpolator(pts), t0 = +pts[0].t, t1 = +pts[pts.length - 1].t;
+    var schritt = Math.max(TAG / 2, (t1 - t0) / 500), teile = [];
+    for (var t = t0; t < t1; t += schritt) teile.push(x(new Date(t)).toFixed(1) + ' ' + y(f(t)).toFixed(1));
+    teile.push(x(new Date(t1)).toFixed(1) + ' ' + y(f(t1)).toFixed(1));
+    return 'M' + teile.join(' L');
+  }
+
+  function zuPunkten(liste) {
+    return (liste || []).filter(function (x) { return x.datum && isFinite(x.prozent); })
+      .map(function (x) { return { t: new Date(String(x.datum).slice(0, 10) + 'T00:00:00'), v: Number(x.prozent) }; })
+      .filter(function (p) { return !isNaN(p.t); })
+      .sort(function (a, b) { return a.t - b.t; });
+  }
+
   function ladeVerlauf(lage) {
     var ziel = lage ? Number(lage.ziel_prozent || 80) : 80;
+    var verlauf;
     return ladeJson('daten/verlauf.json').then(function (v) {
-      zeichneVerlauf(v, ziel);
-      if (lage) zeichneBedarf(v, lage);
+      verlauf = v;
+      // Optional: tägliche Werte über die Netlify-Funktion (nur mit AGSI_API_KEY).
+      return fetch('/.netlify/functions/verlauf').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    }).then(function (live) {
+      if (live && Array.isArray(live.punkte) && live.punkte.length >= 60 && verlauf.punkte && verlauf.punkte.length) {
+        var start = String(verlauf.punkte.map(function (p) { return p.datum; }).sort()[0]).slice(0, 10);
+        var startVorjahr = (Number(start.slice(0, 4)) - 1) + start.slice(4);
+        var aktuell = live.punkte.filter(function (p) { return p.datum >= start; });
+        var vorjahr = live.punkte.filter(function (p) { return p.datum >= startVorjahr && p.datum < start; });
+        if (aktuell.length >= 30) {
+          verlauf.punkte = aktuell;
+          if (vorjahr.length >= 30) verlauf.vorjahr = vorjahr;
+          verlauf.quelle = (live.quelle || 'GIE AGSI+, Tageswerte') + '. ' + (verlauf.quelle || '');
+          verlauf.taeglich = true;
+        }
+      }
+      zeichneVerlauf(verlauf, ziel, lage || {});
+      if (lage) zeichneBedarf(verlauf, lage);
     }).catch(function () {
       var el = $('#verlauf-diagramm'); if (el) el.innerHTML = '';
     });
+  }
+
+  function zeichneVerlauf(verlauf, ziel, lage) {
+    var punkte = zuPunkten(verlauf.punkte);
+    var ziel_el = $('#verlauf-diagramm');
+    if (!ziel_el || punkte.length < 2) return;
+
+    var B = 640, H = 300, L = 44, R = 16, O = 20, U = 36;
+    var t0 = punkte[0].t, t1 = punkte[punkte.length - 1].t;
+    var x = function (t) { return L + (t - t0) / (t1 - t0) * (B - L - R); };
+    var y = function (v) { return O + (100 - v) / 100 * (H - O - U); };
+
+    var s = '<svg viewBox="0 0 ' + B + ' ' + H + '" role="img" aria-label="Verlauf des Füllstands der deutschen Gasspeicher, aktuelle Saison und Vorjahr">';
+    // Bereich, in dem Druck und Ausspeicherleistung sinken
+    var grenze = lage && lage.strom && isFinite(lage.strom.druckgrenze_prozent) ? Number(lage.strom.druckgrenze_prozent) : 0;
+    if (grenze > 0) {
+      s += '<rect class="druckzone" x="' + L + '" y="' + y(grenze).toFixed(1) + '" width="' + (B - L - R) + '" height="' + (y(0) - y(grenze)).toFixed(1) + '"/>' +
+        '<text class="achse druckzone-text" x="' + (L + 6) + '" y="' + (y(grenze) + 14).toFixed(1) + '">unter ' + grenze + ' %: Druck und Ausspeicherleistung sinken</text>';
+    }
+    for (var v = 0; v <= 100; v += 10) {
+      s += '<line class="gitter' + (v % 50 === 0 ? ' stark' : '') + '" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>' +
+        '<text class="achse" x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + ' %</text>';
+    }
+    s += '<line class="ziel-linie" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(ziel) + '" y2="' + y(ziel) + '"/>' +
+      '<text class="ziel-text" x="' + (B - R) + '" y="' + (y(ziel) - 6) + '" text-anchor="end">Vorgabe zum 1. November: ' + ziel + ' %</text>';
+
+    // Stichtagsmarken (z. B. Vorgabe zum 1. Februar)
+    (verlauf.marken || []).forEach(function (mk) {
+      var t = new Date(String(mk.datum).slice(0, 10) + 'T00:00:00');
+      if (isNaN(t) || t < t0 || t > t1 || !isFinite(mk.prozent)) return;
+      var b = 12 * TAG;
+      s += '<line class="ziel-linie marke" x1="' + x(new Date(t - b)).toFixed(1) + '" x2="' + x(new Date(+t + b)).toFixed(1) + '" y1="' + y(mk.prozent).toFixed(1) + '" y2="' + y(mk.prozent).toFixed(1) + '"/>' +
+        '<text class="ziel-text klein" x="' + x(t).toFixed(1) + '" y="' + (y(mk.prozent) - 6).toFixed(1) + '" text-anchor="middle">' + esc(mk.text || '') + '</text>';
+    });
+
+    var pfad = glattPfad(punkte, x, y);
+    s += '<path class="flaeche" d="' + pfad + ' L' + x(t1).toFixed(1) + ' ' + y(0) + ' L' + x(t0).toFixed(1) + ' ' + y(0) + ' Z"/>';
+
+    // Vorjahressaison, um ein Jahr nach vorn verschoben, damit gleiche Kalendertage übereinanderliegen
+    var vorjahr = zuPunkten(verlauf.vorjahr).map(function (p) { var d = new Date(p.t); d.setFullYear(d.getFullYear() + 1); return { t: d, v: p.v }; })
+      .filter(function (p) { return p.t >= t0 && p.t <= t1; });
+    if (vorjahr.length >= 2) {
+      s += '<path class="linie vorjahr" d="' + glattPfad(vorjahr, x, y) + '"/>';
+      var vl = vorjahr[vorjahr.length - 1];
+      s += '<text class="achse vorjahr-text" x="' + (x(vl.t) - 8).toFixed(1) + '" y="' + (y(vl.v) + 18).toFixed(1) + '" text-anchor="end">Vorjahr ' + fmtZahl(vl.v, 1) + ' %</text>';
+    }
+    s += '<path class="linie" d="' + pfad + '"/>';
+
+    // Monatsmarken
+    var m = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
+    while (m <= t1) {
+      var bez = m.toLocaleDateString('de-DE', m.getMonth() === 0 ? { month: 'short', year: '2-digit' } : { month: 'short' });
+      s += '<text class="achse" x="' + x(m).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + esc(bez) + '</text>';
+      m = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+    }
+    // Messpunkte nur zeigen, wenn es wenige sind (bei Tageswerten würden sie die Linie verdecken)
+    if (punkte.length <= 40) {
+      punkte.forEach(function (pt) {
+        s += '<circle class="punkt" cx="' + x(pt.t).toFixed(1) + '" cy="' + y(pt.v).toFixed(1) + '" r="3.5"><title>' + esc(fmtDatum(pt.t.toISOString().slice(0, 10)) + ': ' + fmtZahl(pt.v, 1) + ' %') + '</title></circle>';
+      });
+    }
+    // Tiefstand der Saison
+    var tief = punkte[0]; punkte.forEach(function (p) { if (p.v < tief.v) tief = p; });
+    if (tief !== punkte[punkte.length - 1]) {
+      s += '<circle class="punkt tief" cx="' + x(tief.t).toFixed(1) + '" cy="' + y(tief.v).toFixed(1) + '" r="5"/>' +
+        '<text class="letzter tief" x="' + x(tief.t).toFixed(1) + '" y="' + (y(tief.v) + 22).toFixed(1) + '" text-anchor="middle">Tiefstand ' + fmtZahl(tief.v, 1) + ' % (' + esc(tief.t.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })) + ')</text>';
+    }
+    var letzter = punkte[punkte.length - 1];
+    s += '<text class="letzter" x="' + (x(t1) - 8).toFixed(1) + '" y="' + (y(letzter.v) - 10).toFixed(1) + '" text-anchor="end">' + fmtZahl(letzter.v, 1) + ' %</text>';
+    s += '</svg>';
+    ziel_el.innerHTML = s;
+    setText('#verlauf-quelle', (vorjahr.length >= 2 ? 'Blau: Saison ' + t0.getFullYear() + '/' + String(t1.getFullYear()).slice(2) + '. Grau gestrichelt: die Saison davor, auf dieselben Kalendertage gelegt. ' : '') +
+      (verlauf.taeglich ? '' : 'Zwischen den belegten Punkten glatt interpoliert. ') + (verlauf.quelle || ''));
   }
 
   // Für jeden Tag seit dem Tiefstand: Wie viele Prozentpunkte hätten ab diesem Tag täglich
@@ -187,9 +320,7 @@
     var el = $('#bedarf-diagramm'); if (!el) return;
     var ziel = Number(lage.ziel_prozent || 80);
     var zielDatum = new Date((lage.ziel_datum || '2026-11-01') + 'T00:00:00');
-    var punkte = (verlauf.punkte || []).filter(function (x) { return x.datum && isFinite(x.prozent); })
-      .map(function (x) { return { t: new Date(x.datum + 'T00:00:00'), v: Number(x.prozent) }; })
-      .sort(function (a, b) { return a.t - b.t; });
+    var punkte = zuPunkten(verlauf.punkte);
     var stand = new Date(String(lage.stand_datum || '').slice(0, 10) + 'T00:00:00');
     if (!isNaN(stand) && isFinite(lage.fuellstand_prozent) && (!punkte.length || stand > punkte[punkte.length - 1].t)) {
       punkte.push({ t: stand, v: Number(lage.fuellstand_prozent) });
@@ -202,14 +333,7 @@
     if (heute >= zielDatum) heute = new Date(zielDatum.getTime() - TAG);
     if (heute < punkte[punkte.length - 1].t) heute = punkte[punkte.length - 1].t;
 
-    function fuellstandAm(t) {
-      if (t >= punkte[punkte.length - 1].t) return punkte[punkte.length - 1].v;
-      for (var i = 0; i < punkte.length - 1; i++) {
-        var a = punkte[i], b = punkte[i + 1];
-        if (t >= a.t && t <= b.t) return a.v + (b.v - a.v) * (t - a.t) / (b.t - a.t);
-      }
-      return punkte[0].v;
-    }
+    var fuellstandAm = interpolator(punkte);
     var noetig = [];
     for (var t = new Date(punkte[0].t); t <= heute; t = new Date(t.getTime() + TAG)) {
       var rest = Math.round((zielDatum - t) / TAG); if (rest <= 0) break;
@@ -261,62 +385,6 @@
       ' % am ' + fmtDatum(lage.ziel_datum) + ' zu erreichen; berechnet aus dem Füllstand des Tages und den verbleibenden Tagen. ' +
       'Blaue Linie: tatsächlich erreichte Einspeicherung, Durchschnitt zwischen den Messpunkten' +
       (istLetzt !== null ? ' (zuletzt ' + fmtZahl(istLetzt, 2) + ' Prozentpunkte pro Tag)' : '') + '. Heute nötig: ' + fmtZahl(letzt.w, 2) + '.');
-  }
-
-  function zeichneVerlauf(verlauf, ziel) {
-    var punkte = (verlauf.punkte || []).filter(function (x) { return x.datum && isFinite(x.prozent); })
-      .sort(function (a, b) { return String(a.datum).localeCompare(String(b.datum)); });
-    var ziel_el = $('#verlauf-diagramm');
-    if (!ziel_el || punkte.length < 2) return;
-
-    var B = 640, H = 280, L = 44, R = 16, O = 20, U = 36;
-    var t0 = new Date(punkte[0].datum + 'T00:00:00');
-    var t1 = new Date(punkte[punkte.length - 1].datum + 'T00:00:00');
-    var x = function (t) { return L + (t - t0) / (t1 - t0) * (B - L - R); };
-    var y = function (v) { return O + (100 - v) / 100 * (H - O - U); };
-
-    var s = '<svg viewBox="0 0 ' + B + ' ' + H + '" role="img" aria-label="Verlauf des Füllstands der deutschen Gasspeicher">';
-    [0, 25, 50, 75, 100].forEach(function (v) {
-      s += '<line class="gitter" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>' +
-        '<text class="achse" x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + ' %</text>';
-    });
-    s += '<line class="ziel-linie" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(ziel) + '" y2="' + y(ziel) + '"/>' +
-      '<text class="ziel-text" x="' + (B - R) + '" y="' + (y(ziel) - 6) + '" text-anchor="end">Vorgabe zum 1. November: ' + ziel + ' %</text>';
-
-    var pfad = punkte.map(function (pt, i) {
-      return (i ? 'L' : 'M') + x(new Date(pt.datum + 'T00:00:00')).toFixed(1) + ' ' + y(pt.prozent).toFixed(1);
-    }).join(' ');
-    s += '<path class="flaeche" d="' + pfad + ' L' + x(t1).toFixed(1) + ' ' + y(0) + ' L' + x(t0).toFixed(1) + ' ' + y(0) + ' Z"/>';
-    s += '<path class="linie" d="' + pfad + '"/>';
-
-    // Vorjahressaison, um ein Jahr nach vorn verschoben, damit gleiche Kalendertage übereinanderliegen
-    var vorjahr = (verlauf.vorjahr || []).filter(function (p) { return p.datum && isFinite(p.prozent); })
-      .map(function (p) { var d = new Date(p.datum + 'T00:00:00'); d.setFullYear(d.getFullYear() + 1); return { t: d, v: Number(p.prozent) }; })
-      .filter(function (p) { return p.t >= t0 && p.t <= t1; })
-      .sort(function (a, b) { return a.t - b.t; });
-    if (vorjahr.length >= 2) {
-      s += '<path class="linie vorjahr" d="' + vorjahr.map(function (p, i) { return (i ? 'L' : 'M') + x(p.t).toFixed(1) + ' ' + y(p.v).toFixed(1); }).join(' ') + '"/>';
-      var vl = vorjahr[vorjahr.length - 1];
-      s += '<text class="achse vorjahr-text" x="' + (x(vl.t) - 8).toFixed(1) + '" y="' + (y(vl.v) + 18).toFixed(1) + '" text-anchor="end">Vorjahr ' + fmtZahl(vl.v, 1) + ' %</text>';
-    }
-
-    // Monatsmarken
-    var m = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
-    while (m <= t1) {
-      var bez = m.toLocaleDateString('de-DE', m.getMonth() === 0 ? { month: 'short', year: '2-digit' } : { month: 'short' });
-      s += '<text class="achse" x="' + x(m).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + esc(bez) + '</text>';
-      m = new Date(m.getFullYear(), m.getMonth() + 1, 1);
-    }
-    punkte.forEach(function (pt) {
-      s += '<circle class="punkt" cx="' + x(new Date(pt.datum + 'T00:00:00')).toFixed(1) + '" cy="' + y(pt.prozent).toFixed(1) + '" r="3.5">' +
-        '<title>' + esc(fmtDatum(pt.datum) + ': ' + fmtZahl(pt.prozent, 1) + ' %') + '</title></circle>';
-    });
-    var letzter = punkte[punkte.length - 1];
-    s += '<text class="letzter" x="' + (x(t1) - 8).toFixed(1) + '" y="' + (y(letzter.prozent) - 10).toFixed(1) + '" text-anchor="end">' +
-      fmtZahl(letzter.prozent, 1) + ' %</text>';
-    s += '</svg>';
-    ziel_el.innerHTML = s;
-    setText('#verlauf-quelle', (vorjahr.length >= 2 ? 'Blau: Saison ' + t0.getFullYear() + '/' + String(t1.getFullYear()).slice(2) + '. Grau gestrichelt: die Saison davor, auf dieselben Kalendertage gelegt. ' : '') + (verlauf.quelle || ''));
   }
 
   /* ----------------------------------------------------------- Countdown */
