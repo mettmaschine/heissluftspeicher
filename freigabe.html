@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Freigabe-Helfer – Heißluftspeicher</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+<header class="kopf">
+  <a class="marke" href="./">Heißluft<span>speicher</span></a>
+  <nav class="navi"><a href="./">Zur Startseite</a></nav>
+</header>
+
+<main class="seite">
+  <h1>Freigabe-Helfer</h1>
+  <p>Diese Seite ist nur für den Betreiber. Sie schreibt nichts ins Internet, sondern erzeugt nur den Textblock, der in die Datei <code>daten/eintraege.json</code> eingefügt wird.</p>
+
+  <h2>1. Angaben aus der E-Mail übernehmen</h2>
+  <form class="formular" id="helfer" onsubmit="return false">
+    <div class="feld"><label for="h-zitat">Zitat (ohne Anführungszeichen)</label><textarea id="h-zitat" rows="3"></textarea></div>
+    <div class="feld-reihe">
+      <div class="feld"><label for="h-wer">Wer</label><input id="h-wer" type="text"></div>
+      <div class="feld"><label for="h-funktion">Funktion</label><input id="h-funktion" type="text"></div>
+    </div>
+    <div class="feld-reihe">
+      <div class="feld"><label for="h-datum">Gesagt am</label><input id="h-datum" type="date"></div>
+      <div class="feld"><label for="h-kategorie">Kategorie</label>
+        <select id="h-kategorie">
+          <option>Beschwichtigung</option><option>Leeres Versprechen</option><option>Verharmlosung</option>
+          <option>Schuldverschiebung</option><option>Worthülse</option><option>Sonstiges</option>
+        </select>
+      </div>
+    </div>
+    <div class="feld"><label for="h-eingereicht">Eingereicht am (Datum der E-Mail)</label><input id="h-eingereicht" type="date"></div>
+    <div class="feld"><label><input type="checkbox" id="h-sinngemaess" style="width:auto"> Zitat ist nur sinngemäß wiedergegeben</label></div>
+    <div class="feld"><label for="h-kontext">Zusammenhang</label><textarea id="h-kontext" rows="3"></textarea></div>
+    <div class="feld"><label for="h-quellen">Quellen: je Zeile „Titel | https://…“ (Titel kann fehlen)</label><textarea id="h-quellen" rows="3"></textarea></div>
+    <div class="feld"><label for="h-youtube">YouTube-Link</label><input id="h-youtube" type="url"></div>
+    <div class="feld-reihe">
+      <div class="feld"><label for="h-start">Ausschnitt ab (Minuten:Sekunden)</label><input id="h-start" type="text" placeholder="12:34"></div>
+      <div class="feld"><label for="h-ende">Ausschnitt bis (Minuten:Sekunden)</label><input id="h-ende" type="text" placeholder="13:10"></div>
+    </div>
+    <div class="feld"><label for="h-doks">Dokumente: je Zeile „Titel | dokumente/datei.pdf“</label><textarea id="h-doks" rows="2"></textarea></div>
+    <div class="feld"><label for="h-id">Laufende Nummer (die höchste Nummer in der Datei plus eins)</label><input id="h-id" type="number" min="1" value="2"></div>
+    <button type="button" class="knopf gelb" id="h-erzeugen">Textblock erzeugen</button>
+  </form>
+
+  <h2>2. Textblock kopieren</h2>
+  <p>Diesen Block in <code>daten/eintraege.json</code> direkt nach der ersten Zeile <code>[</code> einfügen. Das Komma am Ende gehört dazu.</p>
+  <textarea id="h-ausgabe" rows="16" readonly></textarea>
+  <p><button type="button" class="knopf" id="h-kopieren">In die Zwischenablage kopieren</button> <span id="h-kopiert" class="hilfe"></span></p>
+
+  <h2>3. Ganze Datei prüfen (freiwillig)</h2>
+  <p>Den kompletten Inhalt von <code>eintraege.json</code> hier einfügen, bevor Sie ihn bei GitHub speichern. Fehlende Kommas oder Anführungszeichen werden gemeldet.</p>
+  <textarea id="h-pruefen" rows="8" placeholder="[ … ]"></textarea>
+  <p><button type="button" class="knopf" id="h-pruefen-knopf">Datei prüfen</button> <span id="h-ergebnis" class="hilfe"></span></p>
+</main>
+
+<script>
+(function () {
+  function w(id) { return document.getElementById(id).value.trim(); }
+  function zeitInSekunden(text) {
+    text = String(text || '').trim();
+    if (!text) return 0;
+    if (/^\d+$/.test(text)) return Number(text);
+    var m = text.match(/^(?:(\d{1,2}):)?(\d{1,3}):(\d{1,2})$/);
+    return m ? (Number(m[1]) || 0) * 3600 + Number(m[2]) * 60 + Number(m[3]) : 0;
+  }
+  (function () {
+    var h = new Date();
+    document.getElementById('h-eingereicht').value = h.getFullYear() + '-' + String(h.getMonth() + 1).padStart(2, '0') + '-' + String(h.getDate()).padStart(2, '0');
+  })();
+  function zeilenZuListe(text) {
+    return text.split('\n').map(function (z) { return z.trim(); }).filter(Boolean).map(function (z) {
+      var teile = z.split('|').map(function (t) { return t.trim(); });
+      if (teile.length === 1) return { titel: '', url: teile[0] };
+      return { titel: teile[0], url: teile[1] };
+    });
+  }
+  document.getElementById('h-erzeugen').addEventListener('click', function () {
+    var eintrag = {
+      id: Number(w('h-id')) || 0,
+      datum: w('h-datum'),
+      eingereicht: w('h-eingereicht'),
+      wer: w('h-wer'),
+      funktion: w('h-funktion'),
+      zitat: w('h-zitat').replace(/^[„"“]+|[“"”]+$/g, ''),
+      sinngemaess: document.getElementById('h-sinngemaess').checked,
+      kategorie: w('h-kategorie'),
+      kontext: w('h-kontext'),
+      quellen: zeilenZuListe(w('h-quellen')),
+      youtube: { url: w('h-youtube'), start: zeitInSekunden(w('h-start')), ende: zeitInSekunden(w('h-ende')) },
+      dokumente: zeilenZuListe(w('h-doks'))
+    };
+    var fehlt = [];
+    if (!eintrag.zitat) fehlt.push('Zitat');
+    if (!eintrag.wer) fehlt.push('Wer');
+    if (!eintrag.datum) fehlt.push('Gesagt am');
+    if (eintrag.youtube.ende && eintrag.youtube.ende <= eintrag.youtube.start) fehlt.push('Ausschnitt-Ende muss nach dem Start liegen');
+    var text = JSON.stringify(eintrag, null, 2).split('\n').map(function (z) { return '  ' + z; }).join('\n') + ',';
+    document.getElementById('h-ausgabe').value = (fehlt.length ? '// Bitte noch ausfüllen: ' + fehlt.join(', ') + '\n' : '') + text;
+  });
+  document.getElementById('h-kopieren').addEventListener('click', function () {
+    var t = document.getElementById('h-ausgabe'); t.select();
+    var ok = false;
+    if (navigator.clipboard) { navigator.clipboard.writeText(t.value); ok = true; } else { ok = document.execCommand('copy'); }
+    document.getElementById('h-kopiert').textContent = ok ? 'Kopiert.' : 'Bitte von Hand markieren und kopieren.';
+  });
+  document.getElementById('h-pruefen-knopf').addEventListener('click', function () {
+    var aus = document.getElementById('h-ergebnis');
+    try {
+      var daten = JSON.parse(document.getElementById('h-pruefen').value);
+      if (!Array.isArray(daten)) throw new Error('Die Datei muss mit [ beginnen und mit ] enden.');
+      var ids = {}; var doppelt = [];
+      daten.forEach(function (e, i) {
+        if (!e.zitat || !e.wer) throw new Error('Eintrag Nr. ' + (i + 1) + ' hat kein Zitat oder keinen Urheber.');
+        if (e.id != null) { if (ids[e.id]) doppelt.push(e.id); ids[e.id] = true; }
+      });
+      aus.textContent = 'In Ordnung: ' + daten.length + ' Einträge.' + (doppelt.length ? ' Achtung, doppelte Nummern: ' + doppelt.join(', ') : '');
+    } catch (e) {
+      aus.textContent = 'Fehler: ' + e.message;
+    }
+  });
+})();
+</script>
+</body>
+</html>

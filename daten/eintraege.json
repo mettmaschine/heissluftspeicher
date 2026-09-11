@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "datum": "2026-01-22",
+    "eingereicht": "2026-09-11",
+    "wer": "Bundesnetzagentur",
+    "funktion": "Aufsichtsbehörde für die Gasversorgung",
+    "zitat": "Es besteht kein Grund zur Sorge.",
+    "sinngemaess": true,
+    "kategorie": "Beschwichtigung",
+    "kontext": "Gesagt bei einem Füllstand von rund 40 % im Januar 2026. Acht Monate später sind die Speicher zu dieser Jahreszeit so leer wie nie zuvor. Wiedergabe laut ZDFheute.",
+    "quellen": [
+      {
+        "titel": "ZDFheute, 22.01.2026: Gasvorräte schwinden – woran es liegt",
+        "url": "https://www.zdfheute.de/wirtschaft/gasspeicher-fuellstand-deutschland-bundesnetzagentur-100.html"
+      }
+    ],
+    "youtube": {
+      "url": "",
+      "start": 0,
+      "ende": 0
+    },
+    "dokumente": []
+  }
+]

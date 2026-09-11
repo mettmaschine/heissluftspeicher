@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Heißluftspeicher – Deutschlands einziger voller Speicher</title>
+<meta name="description" content="Die deutschen Gasspeicher sind so leer wie noch nie zu dieser Jahreszeit. Der Heißluftspeicher der Verantwortlichen ist randvoll. Hier wird mitgezählt.">
+<meta property="og:title" content="Heißluftspeicher – Deutschlands einziger voller Speicher">
+<meta property="og:description" content="Gasspeicher: halb leer. Heißluftspeicher: 100 %. Der Bullshit-Zähler zur Gasversorgung.">
+<meta property="og:type" content="website">
+<link rel="icon" href="bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/stil.css">
+</head>
+<body>
+<a class="sprung" href="#zaehler">Zum Bullshit-Zähler springen</a>
+
+<header class="kopf">
+  <a class="marke" href="./">Heißluft<span>speicher</span></a>
+  <nav class="navi" aria-label="Seitenbereiche">
+    <a href="#lage">Lage</a>
+    <a href="#rechnung">Rechnung</a>
+    <a href="#zaehler">Bullshit-Zähler</a>
+    <a href="#melden">Phrase melden</a>
+    <a href="#bingo">Bingo</a>
+  </nav>
+</header>
+
+<main>
+
+<section class="held" id="lage">
+  <div class="innen">
+    <div class="held-text">
+      <h1>Der einzige volle Speicher in Deutschland ist der Heißluftspeicher.</h1>
+      <p class="held-absatz">Die Gasspeicher sind zu <strong><span id="held-prozent">53,4</span>&nbsp;%</strong> gefüllt – so leer wie noch nie zu dieser Jahreszeit seit Beginn der Aufzeichnungen. Am 1.&nbsp;November sollen es laut Verordnung <strong><span id="held-ziel">80</span>&nbsp;%</strong> sein. Der Heißluftspeicher der Verantwortlichen dagegen ist randvoll und wird täglich nachgefüllt.</p>
+      <p class="held-stand">Füllstand vom <span id="held-datum">1. September 2026</span>. Quelle: <a id="held-quelle" href="https://agsi.gie.eu/data-overview/DE" target="_blank" rel="noopener">GIE AGSI+</a></p>
+    </div>
+
+    <div class="tanks">
+      <figure class="tank-figur">
+        <svg class="tank" viewBox="0 0 250 250" role="img" aria-labelledby="tank-gas-titel">
+          <title id="tank-gas-titel">Gasspeicher Deutschland, Füllstand in Prozent</title>
+          <defs>
+            <clipPath id="clip-gas"><rect x="24" y="24" width="112" height="212" rx="10"/></clipPath>
+          </defs>
+          <rect class="tank-huelle" x="20" y="20" width="120" height="220" rx="14"/>
+          <rect id="gas-fuellung" class="tank-fuellung gas" x="24" y="236" width="112" height="0" clip-path="url(#clip-gas)"/>
+          <g id="gas-ziel-marke" class="tank-marke">
+            <line x1="16" x2="144" y1="66.4" y2="66.4"/>
+            <text x="150" y="70">Ziel <tspan id="gas-ziel-text">80</tspan> %</text>
+          </g>
+          <g id="gas-vorjahr-marke" class="tank-marke vorjahr">
+            <line x1="16" x2="144" y1="85.5" y2="85.5"/>
+            <text x="150" y="89">Vorjahr <tspan id="gas-vorjahr-text">71</tspan> %</text>
+          </g>
+        </svg>
+        <figcaption>
+          <span class="tank-wert"><span id="gas-wert">53,4</span> %</span>
+          <span class="tank-name">Gasspeicher</span>
+          <span class="tank-zusatz">amtlich gemessen</span>
+        </figcaption>
+      </figure>
+
+      <figure class="tank-figur">
+        <svg class="tank" viewBox="0 0 250 250" role="img" aria-labelledby="tank-hl-titel">
+          <title id="tank-hl-titel">Heißluftspeicher, Füllstand 100 Prozent</title>
+          <defs>
+            <clipPath id="clip-hl"><rect x="24" y="24" width="112" height="212" rx="10"/></clipPath>
+            <pattern id="hitze" width="24" height="16" patternUnits="userSpaceOnUse">
+              <path d="M0 8 Q6 0 12 8 T24 8" fill="none" stroke="rgba(255,255,255,.38)" stroke-width="2"/>
+            </pattern>
+          </defs>
+          <rect class="tank-huelle" x="20" y="20" width="120" height="220" rx="14"/>
+          <rect class="tank-fuellung heissluft" x="24" y="24" width="112" height="212" clip-path="url(#clip-hl)"/>
+          <rect x="24" y="24" width="112" height="212" fill="url(#hitze)" clip-path="url(#clip-hl)"/>
+          <g class="tank-marke voll">
+            <line x1="16" x2="144" y1="24" y2="24"/>
+            <text x="150" y="28">randvoll</text>
+          </g>
+        </svg>
+        <figcaption>
+          <span class="tank-wert">100 %</span>
+          <span class="tank-name">Heißluftspeicher</span>
+          <span class="tank-zusatz" id="tank-anzahl">0 Phrasen erfasst</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<div class="warnband" aria-hidden="true"></div>
+
+<section class="countdown" id="countdown" aria-labelledby="countdown-titel">
+  <h2 id="countdown-titel">Bis zum Beginn der Heizsaison am 1. November 2026</h2>
+  <div class="zeit" id="zeit">
+    <div><b data-einheit="monate">0</b><span>Monate</span></div>
+    <div><b data-einheit="wochen">0</b><span>Wochen</span></div>
+    <div><b data-einheit="tage">0</b><span>Tage</span></div>
+    <div><b data-einheit="stunden">00</b><span>Stunden</span></div>
+    <div><b data-einheit="minuten">00</b><span>Minuten</span></div>
+    <div><b data-einheit="sekunden">00</b><span>Sekunden</span></div>
+  </div>
+  <p class="countdown-hinweis" id="countdown-hinweis">Bis dahin müssten die Speicher voll sein. Sie werden es nicht.</p>
+</section>
+
+<section class="abschnitt" id="rechnung">
+  <h2>Die Rechnung, die niemand vorrechnet</h2>
+  <p class="einleitung">Alle Werte werden aus dem aktuellen Füllstand berechnet. Keine Prognose, nur Dreisatz.</p>
+  <dl class="rechnung" id="rechnung-liste"></dl>
+  <figure class="verlauf">
+    <h3>So lief das letzte Jahr</h3>
+    <div id="verlauf-diagramm"></div>
+    <figcaption id="verlauf-quelle"></figcaption>
+  </figure>
+</section>
+
+<section class="abschnitt" id="zaehler">
+  <h2>Der Bullshit-Zähler</h2>
+  <p class="zaehler-zahl"><b id="zaehler-anzahl">0</b><span>dokumentierte Phrasen von Politikern, Behörden und Verbänden zur Gasversorgung</span></p>
+  <p class="einleitung">Jeder kann eine Phrase melden. Veröffentlicht wird sie erst, wenn Zitat und Quelle geprüft wurden. Jeder Eintrag verlinkt seine Belege.</p>
+  <div class="filter">
+    <span class="filter-gruppe">
+      <label for="filter-kategorie">Nur anzeigen:</label>
+      <select id="filter-kategorie"><option value="">Alle Kategorien</option></select>
+    </span>
+    <span class="filter-gruppe">
+      <label for="sortierung">Sortieren nach:</label>
+      <select id="sortierung">
+        <option value="gesagt-neu">Datum der Aussage, neueste zuerst</option>
+        <option value="gesagt-alt">Datum der Aussage, älteste zuerst</option>
+        <option value="eingereicht-neu">Datum der Einreichung, neueste zuerst</option>
+        <option value="eingereicht-alt">Datum der Einreichung, älteste zuerst</option>
+      </select>
+    </span>
+  </div>
+  <div id="eintraege" class="eintraege"><p class="leer">Einträge werden geladen …</p></div>
+</section>
+
+<section class="abschnitt" id="melden">
+  <h2>Phrase melden</h2>
+  <p class="einleitung">Sie haben eine Beschwichtigung, ein leeres Versprechen oder eine Worthülse gehört oder gelesen? Tragen Sie sie hier ein. Je genauer die Quelle, desto schneller die Freigabe.</p>
+
+  <form class="formular" name="phrase" method="POST" action="/danke.html" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" id="melde-formular">
+    <input type="hidden" name="form-name" value="phrase">
+    <input type="hidden" name="eingereicht_am" id="f-eingereicht" value="">
+    <p class="versteckt"><label>Dieses Feld bitte leer lassen: <input name="bot-field"></label></p>
+
+    <div class="feld">
+      <label for="f-zitat">Die Phrase, möglichst wörtlich</label>
+      <textarea id="f-zitat" name="zitat" rows="3" required maxlength="1000" placeholder="„Es besteht kein Grund zur Sorge.“"></textarea>
+    </div>
+
+    <div class="feld-reihe">
+      <div class="feld">
+        <label for="f-wer">Wer hat das gesagt?</label>
+        <input id="f-wer" name="wer" type="text" required maxlength="120" placeholder="Name der Person oder Institution">
+      </div>
+      <div class="feld">
+        <label for="f-funktion">Funktion oder Amt</label>
+        <input id="f-funktion" name="funktion" type="text" maxlength="120" placeholder="z. B. Bundesministerin, Behördensprecher">
+      </div>
+    </div>
+
+    <div class="feld-reihe">
+      <div class="feld">
+        <label for="f-datum">Wann wurde das gesagt?</label>
+        <input id="f-datum" name="datum" type="date" required>
+      </div>
+      <div class="feld">
+        <label for="f-kategorie">Art der Heißluft</label>
+        <select id="f-kategorie" name="kategorie">
+          <option>Beschwichtigung</option>
+          <option>Leeres Versprechen</option>
+          <option>Verharmlosung</option>
+          <option>Schuldverschiebung</option>
+          <option>Worthülse</option>
+          <option>Sonstiges</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="feld">
+      <label for="f-quellen">Quellen (Links, eine je Zeile)</label>
+      <textarea id="f-quellen" name="quellen" rows="3" placeholder="https://…"></textarea>
+      <p class="hilfe">Artikel, Pressemitteilung, Bundestagsprotokoll, Beitrag in sozialen Netzwerken.</p>
+    </div>
+
+    <div class="feld">
+      <label for="f-youtube">YouTube-Link</label>
+      <input id="f-youtube" name="youtube" type="url" placeholder="https://www.youtube.com/watch?v=…">
+      <p class="hilfe">Auf dieser Seite wird später nur der Ausschnitt zwischen Start und Ende abgespielt. Das Video selbst bleibt bei YouTube.</p>
+    </div>
+    <div class="feld-reihe">
+      <div class="feld">
+        <label for="f-youtube-start">Ausschnitt ab (Minuten:Sekunden)</label>
+        <input id="f-youtube-start" name="youtube_start" type="text" inputmode="numeric" placeholder="12:34" autocomplete="off">
+      </div>
+      <div class="feld">
+        <label for="f-youtube-ende">Ausschnitt bis (Minuten:Sekunden)</label>
+        <input id="f-youtube-ende" name="youtube_ende" type="text" inputmode="numeric" placeholder="13:10" autocomplete="off">
+      </div>
+    </div>
+    <div class="schneiden" id="schneiden">
+      <button type="button" class="knopf klein" id="schneiden-laden">Video zum Zuschneiden laden</button>
+      <span class="hilfe">Lädt den Abspieler von YouTube (Google). Erst dabei werden Daten übertragen. Die Zeiten lassen sich auch von Hand eintragen.</span>
+      <div id="schneiden-spieler" class="schneiden-spieler" hidden><div id="schneiden-spieler-innen"></div></div>
+      <div id="schneiden-knoepfe" class="schneiden-knoepfe" hidden>
+        <button type="button" class="knopf klein" id="schneiden-start">Start hier setzen</button>
+        <button type="button" class="knopf klein" id="schneiden-ende">Ende hier setzen</button>
+        <button type="button" class="knopf klein gelb" id="schneiden-pruefen">Ausschnitt abspielen</button>
+        <span id="schneiden-anzeige" class="hilfe">Video an die gewünschte Stelle spulen, dann Start und Ende setzen.</span>
+      </div>
+    </div>
+
+    <div class="feld">
+      <label for="f-dokument">Dokument anhängen (PDF, Bild; bis 10 MB)</label>
+      <input id="f-dokument" name="dokument" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt">
+    </div>
+
+    <div class="feld">
+      <label for="f-kontext">Zusammenhang und warum das Heißluft ist</label>
+      <textarea id="f-kontext" name="kontext" rows="4" maxlength="2000" placeholder="Was war der Anlass? Was stimmte tatsächlich?"></textarea>
+    </div>
+
+    <div class="feld-reihe">
+      <div class="feld">
+        <label for="f-name">Ihr Name (freiwillig)</label>
+        <input id="f-name" name="einsender_name" type="text" maxlength="80">
+      </div>
+      <div class="feld">
+        <label for="f-email">Ihre E-Mail für Rückfragen (freiwillig)</label>
+        <input id="f-email" name="einsender_email" type="email" maxlength="120">
+      </div>
+    </div>
+
+    <div class="feld zustimmung">
+      <label><input type="checkbox" name="datenschutz" value="ja" required> <span>Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen. Meine Angaben werden zur Prüfung an den Betreiber übermittelt.</span></label>
+    </div>
+
+    <button type="submit" class="knopf gelb" id="melde-knopf">Phrase zur Prüfung einreichen</button>
+    <p class="hilfe">Nach dem Absenden prüft der Betreiber Zitat und Quelle. Erst danach erscheint der Eintrag im Zähler.</p>
+  </form>
+</section>
+
+<section class="abschnitt" id="bingo">
+  <h2>Heißluft-Bingo</h2>
+  <p class="einleitung">Für die nächste Pressekonferenz, Talkshow oder Regierungserklärung. Feld antippen, sobald die Phrase fällt. Vier in einer Reihe: Bingo.</p>
+  <div class="bingo-raster" id="bingo-raster"></div>
+  <p class="bingo-meldung" id="bingo-meldung" aria-live="polite"></p>
+  <button type="button" class="knopf" id="bingo-neu">Neue Karte</button>
+</section>
+
+<section class="abschnitt" id="tun">
+  <h2>Was Sie selbst tun können</h2>
+  <ol class="tun-liste">
+    <li><strong>Eigenen Verbrauch kennen.</strong> Zählerstand am 1. jedes Monats notieren. Wer weiß, was er verbraucht, kann im Winter reagieren.</li>
+    <li><strong>Abgeordnete fragen.</strong> Über <a href="https://www.abgeordnetenwatch.de" target="_blank" rel="noopener">abgeordnetenwatch.de</a> lässt sich jede Abgeordnete und jeder Abgeordnete öffentlich fragen, wie die Vorgabe von 80 % noch erreicht werden soll.</li>
+    <li><strong>Amtliche Zahlen selbst lesen.</strong> Die <a href="https://www.bundesnetzagentur.de" target="_blank" rel="noopener">Bundesnetzagentur</a> veröffentlicht einen Lagebericht zur Gasversorgung, die Betreiber melden Füllstände täglich an <a href="https://agsi.gie.eu/data-overview/DE" target="_blank" rel="noopener">AGSI+</a>.</li>
+    <li><strong>Phrasen melden.</strong> Jede dokumentierte Beschwichtigung macht es schwerer, sie im Januar zu vergessen.</li>
+    <li><strong>Diese Seite weitergeben.</strong> Der Zähler wird nur besser, wenn viele mitlesen und mitzählen.</li>
+  </ol>
+</section>
+
+</main>
+
+<footer class="fuss">
+  <div class="innen">
+    <p><strong>Heißluftspeicher</strong> ist Satire mit Quellenangaben. Alle Zitate stammen aus öffentlich zugänglichen Quellen und sind verlinkt. Die Einordnung als Heißluft ist eine Meinungsäußerung des Betreibers.</p>
+    <p>Füllstandsdaten: Gas Infrastructure Europe (AGSI+), Bundesnetzagentur, INES. Zahlen können sich täglich ändern; maßgeblich sind die amtlichen Quellen.</p>
+    <p class="fuss-links"><a href="impressum.html">Impressum</a> <a href="datenschutz.html">Datenschutz</a> <a href="#lage">Nach oben</a></p>
+  </div>
+</footer>
+
+<script src="js/app.js"></script>
+</body>
+</html>

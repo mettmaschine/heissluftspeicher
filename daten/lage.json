@@ -1,0 +1,14 @@
+{
+  "_hinweis": "Diese Datei wird von Hand gepflegt. Nur die Werte rechts vom Doppelpunkt ändern. Dezimaltrennzeichen ist der Punkt.",
+  "fuellstand_prozent": 53.4,
+  "stand_datum": "2026-09-01",
+  "ziel_prozent": 80,
+  "ziel_datum": "2026-11-01",
+  "vorjahr_prozent": 71,
+  "vorjahr_datum": "2025-09-01",
+  "arbeitsgas_twh": 251,
+  "einspeicherung_bisher_pp_tag": 0.1,
+  "quelle_name": "GIE AGSI+ / INES",
+  "quelle_url": "https://agsi.gie.eu/data-overview/DE",
+  "hinweis": "Bis dahin müssten die Speicher zu 80 % voll sein. Der Speicherverband INES hält höchstens 77 % noch für machbar."
+}
