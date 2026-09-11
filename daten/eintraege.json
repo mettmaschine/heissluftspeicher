@@ -1,5 +1,24 @@
 [
   {
+    "id": 4,
+    "datum": "2026-09-09",
+    "eingereicht": "2026-09-11",
+    "wer": "Katherina Reiche",
+    "funktion": "",
+    "zitat": "wir werden handeln",
+    "sinngemaess": false,
+    "kategorie": "Leeres Versprechen",
+    "kontext": "sie halten die Füße still, sehenden Auges in die Katastrophe...",
+    "quellen": [],
+    "youtube": {
+      "url": "https://www.youtube.com/watch?v=Arr_yLvpzLk",
+      "start": 346,
+      "ende": 359
+    },
+    "dokumente": [],
+    "meldung_id": "a5263dacf59d42ab86f93c45"
+  },
+  {
     "id": 3,
     "datum": "2026-09-09",
     "eingereicht": "2026-09-11",
