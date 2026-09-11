@@ -12,6 +12,7 @@ Reine HTML-, CSS- und JavaScript-Dateien ohne Abhängigkeiten. Läuft kostenlos 
 - `daten/eintraege.json` – freigegebene Phrasen (Zähler)
 - `daten/bingo.json` – Phrasen für das Bingo
 - `freigabe.html` – Hilfsseite für den Betreiber zum Erzeugen neuer Einträge
+- `netlify/functions/freigabe.mjs` – Freigabe oder Ablehnung einer Meldung per Link aus der E-Mail
 - `netlify/functions/speicherstand.js` – optionaler automatischer Abruf des Füllstands von AGSI+
 - `dokumente/` – Ablage für freigegebene Dokumente (PDF, Bilder)
 

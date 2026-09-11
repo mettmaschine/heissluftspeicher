@@ -417,6 +417,12 @@
     var heute = new Date();
     var ein = $('#f-eingereicht');
     if (ein) ein.value = heute.getFullYear() + '-' + String(heute.getMonth() + 1).padStart(2, '0') + '-' + String(heute.getDate()).padStart(2, '0');
+    // Meldungsnummer und Freigabe-Links: stehen in der Benachrichtigung; die Freigabe selbst ist passwortgeschützt.
+    var nummer = zufallsNummer();
+    var basis = location.origin + '/freigabe?id=' + nummer + '&aktion=';
+    if ($('#f-meldung-id')) $('#f-meldung-id').value = nummer;
+    if ($('#f-freigabe-link')) $('#f-freigabe-link').value = basis + 'freigeben';
+    if ($('#f-ablehnen-link')) $('#f-ablehnen-link').value = basis + 'ablehnen';
     richteSchneidenEin();
     var datei = $('#f-dokument');
     if (datei) {
@@ -439,6 +445,14 @@
       if (fehler) { ev.preventDefault(); alert(fehler); return; }
       var k = $('#melde-knopf'); if (k) { k.disabled = true; k.textContent = 'Wird gesendet …'; }
     });
+  }
+
+  function zufallsNummer() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g, '').slice(0, 24);
+    var z = ''; var a = new Uint8Array(12);
+    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a); else for (var i = 0; i < 12; i++) a[i] = Math.floor(Math.random() * 256);
+    for (var j = 0; j < a.length; j++) z += ('0' + a[j].toString(16)).slice(-2);
+    return z;
   }
 
   /* ------------------------------------------------- Video zuschneiden */
