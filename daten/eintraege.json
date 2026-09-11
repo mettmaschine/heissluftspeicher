@@ -1,24 +1,5 @@
 [
   {
-    "id": 2,
-    "datum": "2026-09-09",
-    "eingereicht": "2026-09-11",
-    "wer": "Katherina Reiche",
-    "funktion": "",
-    "zitat": "Deutschland versorgt sich zu 38% aus Importen aus den Niederlanden und Belgien und zu 18% aus LNG.",
-    "sinngemaess": false,
-    "kategorie": "Beschwichtigung",
-    "kontext": "",
-    "quellen": [],
-    "youtube": {
-      "url": "https://www.youtube.com/watch?v=Arr_yLvpzLk",
-      "start": 132,
-      "ende": 255
-    },
-    "dokumente": [],
-    "meldung_id": "75f36a4d376847d9af2581dc"
-  },
-  {
     "id": 1,
     "datum": "2026-01-22",
     "eingereicht": "2026-09-11",
