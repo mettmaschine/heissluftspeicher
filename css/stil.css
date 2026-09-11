@@ -224,3 +224,7 @@ textarea { resize: vertical; }
 .eintrag-kopf { align-items: flex-start; }
 .filter select { width: auto; max-width: 100%; }
 [hidden] { display: none !important; }
+.schneiden-reihe { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; width: 100%; }
+.feinjustierung { display: inline-flex; gap: .25rem; }
+.feinjustierung button { font: inherit; font-size: .85rem; padding: .35rem .55rem; border: 2px solid var(--tinte); background: #fff; color: var(--tinte); border-radius: 4px; cursor: pointer; }
+.feinjustierung button:hover { background: var(--gelb); }

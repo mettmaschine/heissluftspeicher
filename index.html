@@ -204,10 +204,23 @@
       <span class="hilfe">Lädt den Abspieler von YouTube (Google). Erst dabei werden Daten übertragen. Die Zeiten lassen sich auch von Hand eintragen.</span>
       <div id="schneiden-spieler" class="schneiden-spieler" hidden><div id="schneiden-spieler-innen"></div></div>
       <div id="schneiden-knoepfe" class="schneiden-knoepfe" hidden>
-        <button type="button" class="knopf klein" id="schneiden-start">Start hier setzen</button>
-        <button type="button" class="knopf klein" id="schneiden-ende">Ende hier setzen</button>
-        <button type="button" class="knopf klein gelb" id="schneiden-pruefen">Ausschnitt abspielen</button>
-        <span id="schneiden-anzeige" class="hilfe">Video an die gewünschte Stelle spulen, dann Start und Ende setzen.</span>
+        <div class="schneiden-reihe">
+          <button type="button" class="knopf klein" id="schneiden-start">Start hier setzen</button>
+          <span class="feinjustierung" data-feld="f-youtube-start" aria-label="Start feinjustieren">
+            <button type="button" data-delta="-5">−5 s</button><button type="button" data-delta="-1">−1 s</button><button type="button" data-delta="1">+1 s</button><button type="button" data-delta="5">+5 s</button>
+          </span>
+        </div>
+        <div class="schneiden-reihe">
+          <button type="button" class="knopf klein" id="schneiden-ende">Ende hier setzen</button>
+          <span class="feinjustierung" data-feld="f-youtube-ende" aria-label="Ende feinjustieren">
+            <button type="button" data-delta="-5">−5 s</button><button type="button" data-delta="-1">−1 s</button><button type="button" data-delta="1">+1 s</button><button type="button" data-delta="5">+5 s</button>
+          </span>
+        </div>
+        <div class="schneiden-reihe">
+          <button type="button" class="knopf klein gelb" id="schneiden-pruefen">Ausschnitt abspielen</button>
+          <button type="button" class="knopf klein" id="schneiden-frei">Vorschau beenden, frei spulen</button>
+        </div>
+        <span id="schneiden-anzeige" class="hilfe">Video an die gewünschte Stelle spulen, dann Start und Ende setzen. Die Zeitfelder lassen sich jederzeit von Hand ändern; die Feinregler springen im Video zur neuen Stelle.</span>
       </div>
     </div>
 

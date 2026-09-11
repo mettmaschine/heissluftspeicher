@@ -488,28 +488,77 @@
     });
 
     function aktuell() { return spieler && spieler.getCurrentTime ? Math.floor(spieler.getCurrentTime()) : null; }
+    function feld(id) { return $('#' + id); }
+    function startWert() { return zeitInSekunden(feld('f-youtube-start').value) || 0; }
+    function endeWert() { return zeitInSekunden(feld('f-youtube-ende').value); }
+
+    // Vorschau: Wir übergeben YouTube keine feste Endzeit, sondern halten selbst am Ende an.
+    // So bleibt der Abspieler danach frei spulbar.
+    var vorschau = null;
+    function stoppeVorschau() { if (vorschau) { clearInterval(vorschau); vorschau = null; } }
+    function springe(t) { if (spieler && spieler.seekTo) { stoppeVorschau(); spieler.seekTo(Math.max(0, t), true); spieler.pauseVideo(); } }
+
     $('#schneiden-start').addEventListener('click', function () {
       var t = aktuell(); if (t === null) return;
-      $('#f-youtube-start').value = sekundenInZeit(t);
-      var ende = zeitInSekunden($('#f-youtube-ende').value);
-      if (ende !== null && ende <= t) $('#f-youtube-ende').value = '';
-      melde('Start gesetzt auf ' + sekundenInZeit(t) + '.');
+      stoppeVorschau();
+      feld('f-youtube-start').value = sekundenInZeit(t);
+      var ende = endeWert();
+      if (ende !== null && ende <= t) { feld('f-youtube-ende').value = ''; melde('Start gesetzt auf ' + sekundenInZeit(t) + '. Das bisherige Ende lag davor und wurde gelöscht.'); }
+      else melde('Start gesetzt auf ' + sekundenInZeit(t) + '.');
     });
     $('#schneiden-ende').addEventListener('click', function () {
       var t = aktuell(); if (t === null) return;
-      var start = zeitInSekunden($('#f-youtube-start').value) || 0;
+      stoppeVorschau();
+      var start = startWert();
       if (t <= start) { melde('Das Ende muss nach dem Start (' + sekundenInZeit(start) + ') liegen.'); return; }
-      $('#f-youtube-ende').value = sekundenInZeit(t);
+      feld('f-youtube-ende').value = sekundenInZeit(t);
       melde('Ausschnitt: ' + sekundenInZeit(start) + ' bis ' + sekundenInZeit(t) + ' (' + (t - start) + ' Sekunden).');
     });
     $('#schneiden-pruefen').addEventListener('click', function () {
       if (!spieler) return;
-      var start = zeitInSekunden($('#f-youtube-start').value) || 0;
-      var ende = zeitInSekunden($('#f-youtube-ende').value);
-      var opt = { videoId: spielerId, startSeconds: start };
-      if (ende !== null && ende > start) opt.endSeconds = ende;
-      spieler.loadVideoById(opt);
-      melde(ende ? 'Spielt den Ausschnitt ' + sekundenInZeit(start) + ' bis ' + sekundenInZeit(ende) + ' ab.' : 'Spielt ab ' + sekundenInZeit(start) + ' (kein Ende gesetzt).');
+      var start = startWert(), ende = endeWert();
+      stoppeVorschau();
+      spieler.seekTo(start, true); spieler.playVideo();
+      if (ende !== null && ende > start) {
+        vorschau = setInterval(function () {
+          if (spieler.getCurrentTime() >= ende) {
+            spieler.pauseVideo(); stoppeVorschau();
+            melde('Ende des Ausschnitts bei ' + sekundenInZeit(ende) + ' erreicht. Sie können frei weiterspulen und Start oder Ende neu setzen.');
+          }
+        }, 200);
+        melde('Spielt den Ausschnitt ' + sekundenInZeit(start) + ' bis ' + sekundenInZeit(ende) + ' ab.');
+      } else {
+        melde('Spielt ab ' + sekundenInZeit(start) + '; noch kein Ende gesetzt.');
+      }
+    });
+    $('#schneiden-frei').addEventListener('click', function () {
+      stoppeVorschau();
+      if (spieler) spieler.playVideo();
+      melde('Freies Spulen. Die eingetragenen Zeiten bleiben erhalten.');
+    });
+
+    // Feinregler: ±1 s und ±5 s je Feld; springen im Video zur neuen Stelle.
+    $$('.feinjustierung button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var id = b.parentNode.getAttribute('data-feld'); var f = feld(id);
+        var basis = zeitInSekunden(f.value); if (basis === null) basis = aktuell() || 0;
+        var neu = Math.max(0, basis + Number(b.getAttribute('data-delta')));
+        f.value = sekundenInZeit(neu);
+        springe(neu);
+        var start = startWert(), ende = endeWert();
+        if (ende !== null && ende <= start) melde('Achtung: Das Ende (' + sekundenInZeit(ende) + ') liegt nicht nach dem Start (' + sekundenInZeit(start) + ').');
+        else melde((id === 'f-youtube-start' ? 'Start' : 'Ende') + ' jetzt bei ' + sekundenInZeit(neu) + '.');
+      });
+    });
+
+    // Von Hand geänderte Zeitfelder: im Video dorthin springen, damit man die Stelle sieht.
+    ['f-youtube-start', 'f-youtube-ende'].forEach(function (id) {
+      feld(id).addEventListener('change', function () {
+        var t = zeitInSekunden(feld(id).value);
+        if (t === null) { if (feld(id).value.trim()) melde('Bitte Minuten:Sekunden eingeben, zum Beispiel 12:34.'); return; }
+        feld(id).value = sekundenInZeit(t);
+        springe(t);
+      });
     });
   }
 
