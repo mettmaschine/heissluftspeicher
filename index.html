@@ -19,6 +19,7 @@
   <nav class="navi" aria-label="Seitenbereiche">
     <a href="#lage">Lage</a>
     <a href="#rechnung">Rechnung</a>
+    <a href="#risiko">Risiko</a>
     <a href="#strom">Strom</a>
     <a href="#zaehler">Bullshit-Zähler</a>
     <a href="#melden">Phrase melden</a>
@@ -117,6 +118,22 @@
     <div id="bedarf-diagramm"></div>
     <figcaption id="bedarf-erklaerung"></figcaption>
   </figure>
+</section>
+
+<section class="abschnitt" id="risiko">
+  <h2>Das Risiko, in Zahlen</h2>
+  <p class="einleitung">Wie wahrscheinlich ist es, dass die Speicher in diesem Winter unter 20 % fallen, wenn alles so weiterläuft wie bisher? Das rechnen wir aus den vergangenen Wintern aus. Es ist keine Prognose einer Behörde, sondern eine Modellrechnung, deren Annahmen unten stehen und die jeder nachrechnen kann.</p>
+  <dl class="rechnung" id="risiko-liste"></dl>
+  <figure class="verlauf">
+    <h3>So hat sich das Risiko seit dem Tiefstand entwickelt</h3>
+    <div id="risiko-diagramm"></div>
+    <figcaption id="risiko-erklaerung"></figcaption>
+  </figure>
+  <div class="strom-text">
+    <p id="risiko-modell"></p>
+    <p><strong>Was das Modell nicht weiß:</strong> Bei knappen Speichern importieren Händler mehr und entnehmen weniger als in Jahren mit vollen Speichern; die Zahl ist deshalb eher eine Obergrenze. Politische Eingriffe (Sparappelle, Notfallstufen, staatliche Einkäufe), Kraftwerksausfälle und ein extrem kalter Winter sind nicht enthalten. Die Annahmen und Daten stehen in der Datei <code>daten/winter.json</code>; wer bessere hat, meldet sie.</p>
+    <p><strong>Warum hier keine Brownout- oder Blackout-Wahrscheinlichkeit steht:</strong> Ob das Stromnetz hält, hängt von Netzreserven, Importen, Kraftwerksverfügbarkeit und dem Wetter in ganz Europa ab. Dafür gibt es die Berichte der Bundesnetzagentur und der Übertragungsnetzbetreiber; eine Prozentzahl, die jemand ohne diese Daten nennt, ist geraten, und geratene Zahlen sind genau das, was diese Seite dokumentiert. Was sich aus den Speicherdaten berechnen lässt, steht oben: die Wahrscheinlichkeit, dass die Speicher in der Dunkelflautenzeit unter der Druckgrenze liegen, also nicht mehr schnell genug liefern können.</p>
+  </div>
 </section>
 
 <section class="abschnitt" id="strom">
@@ -306,6 +323,7 @@
   <div class="innen">
     <p><strong>Heißluftspeicher</strong> ist Satire mit Quellenangaben. Alle Zitate stammen aus öffentlich zugänglichen Quellen und sind verlinkt. Die Einordnung als Heißluft ist eine Meinungsäußerung des Betreibers.</p>
     <p>Füllstandsdaten: Gas Infrastructure Europe (AGSI+), Bundesnetzagentur, INES. Zahlen können sich täglich ändern; maßgeblich sind die amtlichen Quellen.</p>
+    <p class="besucher" id="besucher" hidden>Besuche seit <span id="besucher-seit">11. September 2026</span>: <b id="besucher-zahl">0</b> <span class="hilfe-hell">(nur eine Gesamtzahl; keine Cookies, keine gespeicherten IP-Adressen)</span></p>
     <p class="fuss-links"><a href="impressum.html">Impressum</a> <a href="datenschutz.html">Datenschutz</a> <a href="#lage">Nach oben</a></p>
   </div>
 </footer>

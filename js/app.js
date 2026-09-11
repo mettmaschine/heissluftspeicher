@@ -235,7 +235,7 @@
         }
       }
       zeichneVerlauf(verlauf, ziel, lage || {});
-      if (lage) zeichneBedarf(verlauf, lage);
+      if (lage) { zeichneBedarf(verlauf, lage); ladeRisiko(verlauf, lage); }
     }).catch(function () {
       var el = $('#verlauf-diagramm'); if (el) el.innerHTML = '';
     });
@@ -385,6 +385,161 @@
       ' % am ' + fmtDatum(lage.ziel_datum) + ' zu erreichen; berechnet aus dem Füllstand des Tages und den verbleibenden Tagen. ' +
       'Blaue Linie: tatsächlich erreichte Einspeicherung, Durchschnitt zwischen den Messpunkten' +
       (istLetzt !== null ? ' (zuletzt ' + fmtZahl(istLetzt, 2) + ' Prozentpunkte pro Tag)' : '') + '. Heute nötig: ' + fmtZahl(letzt.w, 2) + '.');
+  }
+
+
+  /* -------------------------------------------------------------- Risiko */
+
+  // "MM-TT" -> Tage seit dem 1. November derselben Saison
+  function saisonTag(mmtt) {
+    var m = Number(String(mmtt).slice(0, 2)), t = Number(String(mmtt).slice(3, 5));
+    var jahr = m >= 7 ? 2025 : 2026;
+    return Math.round((new Date(jahr, m - 1, t) - new Date(2025, 10, 1)) / TAG);
+  }
+  function stuetzFunktion(pts, vorher, nachher) { // lineare Interpolation über Punkte {t, v}
+    pts = pts.slice().sort(function (a, b) { return a.t - b.t; });
+    return function (tag) {
+      if (!pts.length) return nachher;
+      if (tag <= pts[0].t) return vorher != null ? vorher : pts[0].v;
+      if (tag >= pts[pts.length - 1].t) return nachher != null ? nachher : pts[pts.length - 1].v;
+      for (var i = 0; i < pts.length - 1; i++) {
+        if (tag >= pts[i].t && tag <= pts[i + 1].t) return pts[i].v + (pts[i + 1].v - pts[i].v) * (tag - pts[i].t) / ((pts[i + 1].t - pts[i].t) || 1);
+      }
+      return pts[pts.length - 1].v;
+    };
+  }
+  // Für jeden vergangenen Winter: Gesamtentnahme W (Prozentpunkte) und Funktion entnommen(tagSeitNov1)
+  function winterFunktionen(daten) {
+    var profil = stuetzFunktion((daten.profil || []).map(function (p) { return { t: saisonTag(p.tag), v: Number(p.anteil) }; }), 0, 1);
+    return (daten.winter || []).filter(function (w) { return isFinite(w.start) && isFinite(w.tief) && w.start > w.tief; }).map(function (w) {
+      var W = Number(w.start) - Number(w.tief);
+      var eigene = (w.verlauf || []).filter(function (p) { return p.tag && isFinite(p.entnommen); }).map(function (p) { return { t: saisonTag(p.tag), v: Math.min(W, Number(p.entnommen)) }; });
+      var f = eigene.length >= 3 ? stuetzFunktion([{ t: 0, v: 0 }].concat(eigene), 0, W) : function (tag) { return W * profil(tag); };
+      return { saison: w.saison, W: W, entnommen: f, geschaetzt: !!w.geschaetzt };
+    });
+  }
+  // Anteil der Winter, deren Wert größer als x ist; zwischen den Werten linear geglättet
+  function anteilGroesser(werte, x) {
+    var w = werte.slice().sort(function (a, b) { return a - b; }), n = w.length;
+    if (!n) return null;
+    if (x < w[0]) return 1;
+    if (x >= w[n - 1]) return 0;
+    var k = 0; while (k < n - 1 && w[k + 1] <= x) k++;
+    var f = (x - w[k]) / ((w[k + 1] - w[k]) || 1);
+    return Math.max(0, Math.min(1, 1 - (k + 0.5 + f) / n));
+  }
+  function anzahlGroesser(werte, x) { return werte.filter(function (v) { return v > x; }).length; }
+
+  function ladeRisiko(verlauf, lage) {
+    var daten;
+    ladeJson('daten/winter.json').then(function (d) {
+      daten = d;
+      return fetch('/.netlify/functions/winter').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    }).then(function (live) {
+      if (live && Array.isArray(live.winter) && live.winter.length >= 8) { daten.winter = live.winter; daten.quelle = live.quelle; daten.exakt = true; }
+      zeigeRisiko(verlauf, lage, daten);
+    }).catch(function (e) {
+      var el = $('#risiko-liste'); if (el) el.innerHTML = '<p class="fehler">Die Winterdaten konnten nicht geladen werden (daten/winter.json). ' + esc(e.message) + '</p>';
+    });
+  }
+
+  function zeigeRisiko(verlauf, lage, daten) {
+    var punkte = zuPunkten(verlauf.punkte);
+    var stand = new Date(String(lage.stand_datum || '').slice(0, 10) + 'T00:00:00');
+    if (!isNaN(stand) && isFinite(lage.fuellstand_prozent) && (!punkte.length || stand > punkte[punkte.length - 1].t)) punkte.push({ t: stand, v: Number(lage.fuellstand_prozent) });
+    var fns = winterFunktionen(daten);
+    var listeEl = $('#risiko-liste');
+    if (punkte.length < 2 || fns.length < 3) { if (listeEl) listeEl.innerHTML = '<p class="fehler">Für die Risikorechnung fehlen Daten (Verlauf oder Winter).</p>'; return; }
+
+    var f = interpolator(punkte), letzter = punkte[punkte.length - 1];
+    var winterStart = new Date((lage.ziel_datum || '2026-11-01') + 'T00:00:00');
+    var febDatum = new Date(winterStart.getFullYear() + 1, 1, 1), febTag = saisonTag('02-01');
+    var schwelle = Number(daten.schwelle_mangellage_prozent || 20);
+    var druckgrenze = lage.strom && isFinite(lage.strom.druckgrenze_prozent) ? Number(lage.strom.druckgrenze_prozent) : 50;
+    var n = fns.length, geschaetzt = fns.filter(function (w) { return w.geschaetzt; }).length;
+
+    // Rechnung für einen Tag; Daten werden nur bis zum letzten Messpunkt verwendet, danach bleibt alles konstant.
+    function fuerTag(tag) {
+      var d = tag < letzter.t ? tag : letzter.t;
+      var standWert = f(d);
+      var e = { datum: d, stand: standWert, n: n };
+      if (d < winterStart) {
+        var vorher = new Date(d.getTime() - 30 * TAG);
+        var spanne = vorher < punkte[0].t ? Math.max(1, (d - punkte[0].t) / TAG) : 30;
+        var rate = (f(d) - f(vorher < punkte[0].t ? punkte[0].t : vorher)) / spanne;
+        var tage = Math.max(0, Math.round((winterStart - d) / TAG));
+        e.phase = 'vorher'; e.rate = rate;
+        e.proj = Math.max(0, Math.min(100, standWert + Math.max(0, rate) * tage));
+        var restM = fns.map(function (w) { return w.W; }), xM = e.proj - schwelle;
+        var restD = fns.map(function (w) { return w.entnommen(febTag); }), xD = e.proj - druckgrenze;
+        e.mangel = anteilGroesser(restM, xM); e.mangelAnzahl = anzahlGroesser(restM, xM);
+        e.druck = anteilGroesser(restD, xD); e.druckAnzahl = anzahlGroesser(restD, xD);
+      } else {
+        var st = Math.round((d - winterStart) / TAG);
+        e.phase = 'winter'; e.proj = null;
+        if (standWert < schwelle) { e.mangel = 1; e.mangelAnzahl = n; e.eingetreten = true; }
+        else { var restM2 = fns.map(function (w) { return Math.max(0, w.W - w.entnommen(st)); }), xM2 = standWert - schwelle; e.mangel = anteilGroesser(restM2, xM2); e.mangelAnzahl = anzahlGroesser(restM2, xM2); }
+        if (d >= febDatum) { e.druck = standWert < druckgrenze ? 1 : 0; e.druckAnzahl = e.druck ? n : 0; e.druckFest = true; }
+        else { var restD2 = fns.map(function (w) { return Math.max(0, w.entnommen(febTag) - w.entnommen(st)); }), xD2 = standWert - druckgrenze; e.druck = anteilGroesser(restD2, xD2); e.druckAnzahl = anzahlGroesser(restD2, xD2); }
+      }
+      return e;
+    }
+
+    var heute = new Date(); heute.setHours(0, 0, 0, 0);
+    var jetzt = fuerTag(heute);
+
+    // Kennzahlen
+    var zeilen = [
+      { t: 'Gasmangellage in diesem Winter (Füllstand unter ' + fmtZahl(schwelle) + ' %)', w: fmtZahl(jetzt.mangel * 100) + ' %',
+        k: jetzt.eingetreten ? 'eingetreten: der Füllstand liegt bereits unter der Schwelle' : 'in ' + jetzt.mangelAnzahl + ' von ' + n + ' vergangenen Wintern hätte die Entnahme dafür ausgereicht', warnung: jetzt.mangel >= 0.5 },
+      { t: 'Speicher am 1. Februar unter der Druckgrenze (' + fmtZahl(druckgrenze) + ' %)', w: fmtZahl(jetzt.druck * 100) + ' %',
+        k: jetzt.druckFest ? (jetzt.druck ? 'eingetreten' : 'nicht eingetreten') : 'in ' + jetzt.druckAnzahl + ' von ' + n + ' vergangenen Wintern; mitten in der Dunkelflautenzeit', warnung: jetzt.druck >= 0.5 }
+    ];
+    if (jetzt.phase === 'vorher') {
+      zeilen.push({ t: 'Erwarteter Füllstand am ' + fmtDatum(lage.ziel_datum) + ' bei gleichbleibendem Tempo', w: fmtZahl(jetzt.proj, 1) + ' %',
+        k: 'aktuelles Tempo ' + fmtZahl(jetzt.rate, 2) + ' Prozentpunkte pro Tag (Durchschnitt der letzten 30 Tage), Stand ' + fmtDatum(jetzt.datum.toISOString().slice(0, 10)) });
+    }
+    zeilen.push({ t: 'Datengrundlage', w: n + ' Winter', k: daten.exakt ? 'seit 2011/12, exakt aus AGSI-Tageswerten berechnet' : 'seit 2011/12, davon ' + geschaetzt + ' mit geschätzten Werten; mit AGSI-Schlüssel werden sie automatisch exakt' });
+    listeEl.innerHTML = zeilen.map(function (z) {
+      return '<div' + (z.warnung ? ' class="warnung"' : '') + '><dt>' + esc(z.t) + '</dt><dd>' + esc(z.w) + (z.k ? '<small>' + esc(z.k) + '</small>' : '') + '</dd></div>';
+    }).join('');
+
+    // Modellbeschreibung
+    var modellEl = $('#risiko-modell'); if (modellEl) modellEl.innerHTML = '<strong>So wird gerechnet:</strong> ' + esc('Aus dem Tempo der letzten 30 Tage ergibt sich, wo die Speicher am ' + fmtDatum(lage.ziel_datum) + ' stehen' +
+      (jetzt.phase === 'vorher' ? ' (derzeit ' + fmtZahl(jetzt.proj, 1) + ' %)' : '') + '. Dann wird für jeden der ' + n + ' vergangenen Winter seit 2011/12 geprüft, ob die damalige Entnahme zwischen 1. November und Tiefstand ausgereicht hätte, um von diesem Stand unter ' + fmtZahl(schwelle) +
+      ' % zu fallen. Der Anteil dieser Winter ist die angezeigte Wahrscheinlichkeit; zwischen den einzelnen Winterwerten wird geglättet. Für die Druckgrenze gilt dasselbe mit der Entnahme bis zum 1. Februar. Im Winter selbst wird ab dem tatsächlichen Füllstand mit der jeweils noch ausstehenden Entnahme gerechnet.');
+
+    // Verlaufskurve seit dem Tiefstand
+    var tief = 0; punkte.forEach(function (p, i) { if (p.v < punkte[tief].v) tief = i; });
+    var start = punkte[tief].t;
+    var reihe = [];
+    for (var t = new Date(start); t <= heute; t = new Date(t.getTime() + TAG)) { var e = fuerTag(t); reihe.push({ t: t, m: e.mangel, d: e.druck }); }
+    var el = $('#risiko-diagramm');
+    if (!el || reihe.length < 2) return;
+    var B = 640, H = 280, L = 52, R = 16, O = 20, U = 36;
+    var t0 = reihe[0].t, t1 = reihe[reihe.length - 1].t;
+    var x = function (tt) { return L + (tt - t0) / ((t1 - t0) || 1) * (B - L - R); };
+    var y = function (v) { return O + (1 - v) * (H - O - U); };
+    var s = '<svg viewBox="0 0 ' + B + ' ' + H + '" role="img" aria-label="Wahrscheinlichkeit einer Gasmangellage und einer Unterschreitung der Druckgrenze im Zeitverlauf">';
+    for (var g = 0; g <= 1.0001; g += 0.2) {
+      s += '<line class="gitter" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(g).toFixed(1) + '" y2="' + y(g).toFixed(1) + '"/>' +
+        '<text class="achse" x="' + (L - 6) + '" y="' + (y(g) + 4).toFixed(1) + '" text-anchor="end">' + Math.round(g * 100) + ' %</text>';
+    }
+    var m = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
+    while (m <= t1) {
+      s += '<text class="achse" x="' + x(m).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + esc(m.toLocaleDateString('de-DE', { month: 'short' })) + '</text>';
+      m = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+    }
+    s += '<path class="linie druck" d="' + reihe.map(function (p, i) { return (i ? 'L' : 'M') + x(p.t).toFixed(1) + ' ' + y(p.d).toFixed(1); }).join(' ') + '"/>';
+    s += '<path class="linie noetig" d="' + reihe.map(function (p, i) { return (i ? 'L' : 'M') + x(p.t).toFixed(1) + ' ' + y(p.m).toFixed(1); }).join(' ') + '"/>';
+    var l = reihe[reihe.length - 1];
+    s += '<circle class="punkt noetig" cx="' + x(l.t).toFixed(1) + '" cy="' + y(l.m).toFixed(1) + '" r="4"/>' +
+      '<text class="letzter noetig" x="' + (x(l.t) - 8).toFixed(1) + '" y="' + (y(l.m) - 10).toFixed(1) + '" text-anchor="end">Mangellage ' + Math.round(l.m * 100) + ' %</text>';
+    s += '<circle class="punkt druck" cx="' + x(l.t).toFixed(1) + '" cy="' + y(l.d).toFixed(1) + '" r="4"/>' +
+      '<text class="letzter druck" x="' + (x(l.t) - 8).toFixed(1) + '" y="' + (y(l.d) + 18).toFixed(1) + '" text-anchor="end">Druckgrenze ' + Math.round(l.d * 100) + ' %</text>';
+    s += '</svg>';
+    el.innerHTML = s;
+    setText('#risiko-erklaerung', 'Rot: Wahrscheinlichkeit, dass der Füllstand in diesem Winter unter ' + fmtZahl(schwelle) + ' % fällt. Orange: Wahrscheinlichkeit, dass die Speicher am 1. Februar unter ' + fmtZahl(druckgrenze) + ' % stehen. Jeder Punkt der Kurve ist die Rechnung mit dem Wissensstand des jeweiligen Tages. Datengrundlage: ' + (daten.quelle || 'daten/winter.json') + '.');
   }
 
   /* ----------------------------------------------------------- Countdown */
@@ -748,6 +903,23 @@
     });
   }
 
+  /* ------------------------------------------------------------ Besucher */
+
+  function richteZaehlerEin() {
+    var el = $('#besucher'); if (!el) return;
+    var methode = 'GET';
+    try {
+      // Einmal je Browsersitzung zählen, damit Neuladen nicht doppelt zählt. Kein Cookie, nur ein Sitzungsmerker.
+      if (!sessionStorage.getItem('hl-gezaehlt')) { methode = 'POST'; sessionStorage.setItem('hl-gezaehlt', '1'); }
+    } catch (e) { methode = 'POST'; }
+    fetch('/besucher', { method: methode }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !isFinite(d.besuche)) { el.hidden = true; return; }
+      setText('#besucher-zahl', fmtZahl(d.besuche));
+      setText('#besucher-seit', fmtDatum(d.seit));
+      el.hidden = false;
+    }).catch(function () { el.hidden = true; });
+  }
+
   /* --------------------------------------------------------------- Start */
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -756,5 +928,6 @@
     ladeEintraege();
     ladeBingo();
     richteFormularEin();
+    richteZaehlerEin();
   });
 })();

@@ -248,3 +248,11 @@ textarea { resize: vertical; }
 .verlauf .ziel-linie.marke { stroke-width: 3; }
 .verlauf .punkt.tief { fill: var(--rot); stroke: #fff; }
 .verlauf .letzter.tief { fill: var(--rot); font-size: 12px; }
+
+.verlauf .linie.druck { stroke: var(--orange); }
+.verlauf .punkt.druck { stroke: var(--orange); }
+.verlauf .letzter.druck { fill: var(--orange); }
+
+.besucher { font-size: 1rem; }
+.besucher b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.hilfe-hell { color: #9fb0c2; font-size: .85rem; }
