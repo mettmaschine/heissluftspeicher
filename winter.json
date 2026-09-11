@@ -1,0 +1,159 @@
+{
+  "_hinweis": "Vergangene Winter: Füllstand am 1. November ('start') und Tiefstand des Winters ('tief'), jeweils in Prozent. Werte mit 'geschaetzt': true sind aus Presseberichten grob rekonstruiert und sollten mit agsi.gie.eu geprüft werden. Mit AGSI-Schlüssel (Anleitung Teil I) werden alle Winter automatisch exakt berechnet und diese Liste wird nicht mehr verwendet.",
+  "schwelle_mangellage_prozent": 20,
+  "profil": [
+    {
+      "tag": "11-01",
+      "anteil": 0.0
+    },
+    {
+      "tag": "12-01",
+      "anteil": 0.12
+    },
+    {
+      "tag": "01-01",
+      "anteil": 0.35
+    },
+    {
+      "tag": "02-01",
+      "anteil": 0.65
+    },
+    {
+      "tag": "03-01",
+      "anteil": 0.9
+    },
+    {
+      "tag": "04-01",
+      "anteil": 1.0
+    }
+  ],
+  "_profil_hinweis": "Anteil der gesamten Winterentnahme, der bis zum jeweiligen Tag typischerweise erfolgt ist. Wird nur gebraucht, solange keine Tageswerte je Winter vorliegen.",
+  "sommer_rest": [
+    {
+      "tag": "03-15",
+      "pp": 57
+    },
+    {
+      "tag": "04-01",
+      "pp": 56
+    },
+    {
+      "tag": "05-01",
+      "pp": 49
+    },
+    {
+      "tag": "06-01",
+      "pp": 40
+    },
+    {
+      "tag": "07-01",
+      "pp": 31
+    },
+    {
+      "tag": "08-01",
+      "pp": 22
+    },
+    {
+      "tag": "09-01",
+      "pp": 13
+    },
+    {
+      "tag": "10-01",
+      "pp": 6
+    },
+    {
+      "tag": "11-01",
+      "pp": 0
+    }
+  ],
+  "_sommer_rest_hinweis": "Übliche Einspeicherung vom jeweiligen Tag bis zum 1. November in Prozentpunkten (Mittel der Jahre 2011 bis 2025, grob aus Presseberichten geschätzt). Mit AGSI-Schlüssel wird das Profil automatisch exakt berechnet.",
+  "winter": [
+    {
+      "saison": "2011/12",
+      "start": 95,
+      "tief": 26,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2012/13",
+      "start": 92,
+      "tief": 18,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2013/14",
+      "start": 97,
+      "tief": 52,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2014/15",
+      "start": 93,
+      "tief": 33,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2015/16",
+      "start": 95,
+      "tief": 34,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2016/17",
+      "start": 92,
+      "tief": 26,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2017/18",
+      "start": 92,
+      "tief": 14,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2018/19",
+      "start": 91,
+      "tief": 41,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2019/20",
+      "start": 98,
+      "tief": 63,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2020/21",
+      "start": 95,
+      "tief": 26,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2021/22",
+      "start": 72,
+      "tief": 25,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2022/23",
+      "start": 99,
+      "tief": 64
+    },
+    {
+      "saison": "2023/24",
+      "start": 99,
+      "tief": 66,
+      "geschaetzt": true
+    },
+    {
+      "saison": "2024/25",
+      "start": 98,
+      "tief": 29
+    },
+    {
+      "saison": "2025/26",
+      "start": 75,
+      "tief": 21
+    }
+  ]
+}

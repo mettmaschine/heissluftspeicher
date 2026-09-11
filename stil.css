@@ -1,0 +1,259 @@
+/* Heißluftspeicher – Gestaltung
+   Farben aus der Welt des Gases: Warngelb, Gasflammenblau, Tiefblau, Papier. */
+
+:root {
+  --gelb: #f2c300;
+  --gelb-dunkel: #d9ad00;
+  --tiefblau: #0f2a44;
+  --nacht: #0a1d30;
+  --flamme: #2e8be0;
+  --flamme-dunkel: #1d5fa3;
+  --flamme-hell: #8fc6ff;
+  --orange: #f26a1b;
+  --papier: #f7f5ee;
+  --papier-dunkel: #e6e1d3;
+  --tinte: #14212e;
+  --grau: #5e6b78;
+  --rot: #c8102e;
+  --breite: 72rem;
+  --schrift: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --serif: Georgia, "Times New Roman", Times, serif;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  font-family: var(--schrift);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--tinte);
+  background: var(--papier);
+}
+
+a { color: var(--flamme-dunkel); text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+a:hover { color: var(--tinte); }
+:focus-visible { outline: 3px solid var(--flamme); outline-offset: 2px; }
+
+.innen { max-width: var(--breite); margin: 0 auto; }
+
+.sprung { position: absolute; left: -999px; top: 0; background: var(--tinte); color: #fff; padding: .5rem 1rem; z-index: 20; }
+.sprung:focus { left: 1rem; }
+
+.versteckt { position: absolute; left: -9999px; }
+
+/* Kopf und Held ------------------------------------------------ */
+
+.kopf {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap;
+  padding: 1rem clamp(1rem, 4vw, 3rem);
+  background: var(--gelb);
+}
+.marke { font-weight: 900; font-size: 1.4rem; letter-spacing: -.02em; color: var(--tinte); text-decoration: none; }
+.marke span { font-weight: 400; }
+.navi { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+.navi a { color: var(--tinte); text-decoration: none; font-weight: 600; border-bottom: 2px solid transparent; }
+.navi a:hover { border-color: var(--tinte); }
+
+.held { background: var(--gelb); padding: clamp(1.5rem, 5vw, 4rem) clamp(1rem, 4vw, 3rem) clamp(2rem, 6vw, 4.5rem); }
+.held .innen { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(1.5rem, 5vw, 4rem); align-items: end; }
+.held h1 {
+  font-size: clamp(2.1rem, 5.5vw, 4.25rem);
+  line-height: 1.02; letter-spacing: -.025em; font-weight: 900;
+  margin: 0 0 1.25rem; max-width: 16ch;
+}
+.held-absatz { font-size: clamp(1.05rem, 1.6vw, 1.25rem); max-width: 48ch; margin: 0 0 1rem; }
+.held-stand { font-size: .95rem; margin: 0; color: #3b4652; }
+.held-stand a { color: inherit; }
+
+.tanks { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.tank-figur { margin: 0; text-align: center; }
+.tank { width: 100%; height: auto; display: block; }
+.tank-huelle { fill: rgba(20, 33, 46, .07); stroke: var(--tinte); stroke-width: 3; }
+.tank-fuellung.gas { fill: var(--flamme); transition: height .9s ease, y .9s ease; }
+.tank-fuellung.heissluft { fill: var(--orange); }
+.tank-marke line { stroke: var(--tinte); stroke-width: 2; stroke-dasharray: 4 4; }
+.tank-marke text { font-size: 12px; font-weight: 700; fill: var(--tinte); font-family: var(--schrift); }
+.tank-marke.vorjahr line { stroke: #4a5560; }
+.tank-marke.vorjahr text { fill: #4a5560; font-weight: 600; }
+.tank-marke.voll line { stroke: var(--rot); stroke-dasharray: none; }
+.tank-marke.voll text { fill: var(--rot); }
+.tank-wert { display: block; font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 900; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tank-name { display: block; font-weight: 700; }
+.tank-zusatz { display: block; color: #3b4652; font-size: .9rem; }
+
+.warnband { height: 12px; background: repeating-linear-gradient(-45deg, var(--gelb) 0 16px, var(--tinte) 16px 32px); }
+
+/* Countdown ----------------------------------------------------- */
+
+.countdown { background: var(--tiefblau); color: var(--papier); padding: clamp(2rem, 5vw, 3.5rem) 1rem; text-align: center; }
+.countdown h2 { font-size: clamp(1.1rem, 2.2vw, 1.5rem); font-weight: 600; margin: 0 0 1.5rem; }
+.zeit { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: .5rem; max-width: var(--breite); margin: 0 auto; }
+.zeit b { display: block; font-size: clamp(1.9rem, 6vw, 4rem); font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -.03em; line-height: 1; }
+.zeit span { display: block; font-size: .9rem; opacity: .8; margin-top: .35rem; }
+.countdown-hinweis { margin: 1.5rem 0 0; opacity: .85; }
+
+/* Abschnitte ---------------------------------------------------- */
+
+.abschnitt { max-width: var(--breite); margin: 0 auto; padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 3rem); }
+.abschnitt + .abschnitt { border-top: 2px solid var(--papier-dunkel); }
+.abschnitt h2 { font-size: clamp(1.7rem, 3.5vw, 2.5rem); font-weight: 900; letter-spacing: -.02em; line-height: 1.1; margin: 0 0 .75rem; }
+.abschnitt h3 { font-size: 1.2rem; margin: 0 0 .75rem; }
+.einleitung { max-width: 64ch; margin: 0 0 1.5rem; }
+
+/* Rechnung */
+.rechnung { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.5rem 2rem; margin: 1.5rem 0 2.5rem; }
+.rechnung div { border-top: 3px solid var(--tinte); padding-top: .75rem; }
+.rechnung dt { font-size: .95rem; color: var(--grau); }
+.rechnung dd { margin: 0; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 900; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.rechnung dd small { display: block; font-size: .95rem; font-weight: 400; letter-spacing: 0; margin-top: .3rem; color: var(--tinte); }
+.rechnung .warnung dd { color: var(--rot); }
+
+.verlauf { margin: 0; }
+.verlauf svg { width: 100%; height: auto; display: block; background: #fff; border: 2px solid var(--papier-dunkel); }
+.verlauf .gitter { stroke: var(--papier-dunkel); stroke-width: 1; }
+.verlauf .achse { font-size: 12px; fill: var(--grau); font-family: var(--schrift); }
+.verlauf .ziel-linie { stroke: var(--rot); stroke-width: 2; stroke-dasharray: 6 5; }
+.verlauf .ziel-text { font-size: 12px; font-weight: 700; fill: var(--rot); font-family: var(--schrift); }
+.verlauf .flaeche { fill: rgba(46, 139, 224, .12); }
+.verlauf .linie { fill: none; stroke: var(--flamme); stroke-width: 3; stroke-linejoin: round; }
+.verlauf .punkt { fill: #fff; stroke: var(--flamme); stroke-width: 2; }
+.verlauf .letzter { font-size: 14px; font-weight: 900; fill: var(--tinte); font-family: var(--schrift); }
+.verlauf figcaption { font-size: .9rem; color: var(--grau); margin-top: .5rem; }
+
+/* Zähler */
+.zaehler-zahl { margin: .5rem 0 1rem; }
+.zaehler-zahl b { display: block; font-size: clamp(4rem, 13vw, 8rem); font-weight: 900; letter-spacing: -.05em; line-height: .95; font-variant-numeric: tabular-nums; }
+.zaehler-zahl span { display: block; max-width: 40ch; font-size: 1.05rem; margin-top: .5rem; }
+.filter { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.filter select { font: inherit; padding: .4rem .6rem; border: 2px solid var(--tinte); border-radius: 4px; background: #fff; color: var(--tinte); }
+
+.eintrag { border-left: 5px solid var(--gelb); padding: .5rem 0 1rem 1.25rem; margin: 1.75rem 0; }
+.eintrag:target { border-left-color: var(--rot); }
+.eintrag-kopf { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: .9rem; color: var(--grau); }
+.etikett { background: var(--tinte); color: var(--papier); padding: .1rem .55rem; border-radius: 3px; font-weight: 600; }
+.zitat { font-family: var(--serif); font-style: italic; font-size: clamp(1.35rem, 2.6vw, 1.8rem); line-height: 1.3; margin: .75rem 0 .5rem; max-width: 40ch; }
+.zitat small { font-family: var(--schrift); font-style: normal; font-size: .85rem; color: var(--grau); }
+.wer { margin: 0 0 .5rem; font-weight: 700; }
+.kontext { margin: .5rem 0; max-width: 70ch; }
+.listen-titel { margin: .75rem 0 .2rem; font-size: .9rem; color: var(--grau); }
+.quellen, .dokumente { margin: 0; padding-left: 1.2rem; }
+.video { margin: .75rem 0; }
+.video .hilfe { display: block; margin-top: .3rem; }
+.video iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; max-width: 40rem; display: block; }
+.direktlink { font-size: .85rem; margin: .75rem 0 0; }
+.direktlink a { color: var(--grau); }
+.leer, .fehler { padding: 1rem; border: 2px dashed var(--papier-dunkel); }
+.fehler { border-color: var(--rot); color: var(--rot); }
+
+/* Formular */
+.formular { max-width: 46rem; }
+.feld { margin: 1rem 0; }
+.feld-reihe { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.25rem; }
+.feld label { display: block; font-weight: 700; margin-bottom: .3rem; }
+.zustimmung label { font-weight: 400; display: flex; gap: .6rem; align-items: flex-start; }
+.zustimmung input { width: auto; margin-top: .3rem; }
+.hilfe { font-size: .9rem; color: var(--grau); margin: .3rem 0 0; }
+input, textarea, select {
+  width: 100%; font: inherit; padding: .6rem .7rem;
+  border: 2px solid var(--tinte); border-radius: 4px; background: #fff; color: var(--tinte);
+}
+input[type="file"] { padding: .4rem; background: transparent; }
+textarea { resize: vertical; }
+
+.knopf {
+  display: inline-block; background: var(--tinte); color: var(--papier);
+  border: 0; font: inherit; font-weight: 700; padding: .85rem 1.4rem; border-radius: 4px; cursor: pointer;
+}
+.knopf:hover { background: var(--flamme-dunkel); }
+.knopf.gelb { background: var(--gelb); color: var(--tinte); }
+.knopf.gelb:hover { background: var(--gelb-dunkel); }
+.knopf.klein { padding: .5rem .9rem; font-size: .95rem; }
+.knopf[disabled] { opacity: .6; cursor: wait; }
+
+/* Bingo */
+.bingo-raster { display: grid; grid-template-columns: repeat(4, 1fr); gap: .5rem; max-width: 44rem; margin: 0 0 1rem; }
+.bingo-raster button {
+  aspect-ratio: 1; font: inherit; font-size: clamp(.68rem, 1.6vw, .95rem); line-height: 1.2; padding: .4rem;
+  border: 2px solid var(--tinte); background: #fff; color: var(--tinte); border-radius: 4px; cursor: pointer;
+}
+.bingo-raster button[aria-pressed="true"] { background: var(--tiefblau); color: var(--papier); }
+.bingo-meldung { font-weight: 900; font-size: 1.4rem; color: var(--rot); min-height: 1.6em; margin: 0 0 1rem; }
+
+/* Tun */
+.tun-liste { max-width: 64ch; padding-left: 1.4rem; }
+.tun-liste li { margin: .6rem 0; }
+
+/* Fuß */
+.fuss { background: var(--nacht); color: var(--papier); padding: 2.5rem clamp(1rem, 4vw, 3rem); font-size: .95rem; }
+.fuss p { max-width: 70ch; margin: 0 0 .75rem; }
+.fuss a { color: var(--flamme-hell); }
+.fuss-links a { margin-right: 1.25rem; }
+
+/* Unterseiten */
+.seite { max-width: 46rem; margin: 0 auto; padding: clamp(2rem, 5vw, 3.5rem) clamp(1rem, 4vw, 3rem); }
+.seite h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; letter-spacing: -.02em; margin: 0 0 1rem; }
+.seite h2 { font-size: 1.3rem; margin: 2rem 0 .5rem; }
+.seite .platzhalter { background: #fff3b0; padding: 0 .2em; }
+.seite pre { background: #fff; border: 2px solid var(--papier-dunkel); padding: 1rem; overflow: auto; font-size: .9rem; }
+
+/* Kleine Bildschirme */
+@media (max-width: 48rem) {
+  .held .innen { grid-template-columns: 1fr; }
+  .zeit { grid-template-columns: repeat(3, 1fr); gap: 1rem .5rem; }
+  .feld-reihe { grid-template-columns: 1fr; gap: 0; }
+  .eintrag { padding-left: .9rem; }
+}
+
+/* Ergänzungen: Sortierung, zwei Daten je Eintrag, Zuschneiden */
+.filter { gap: 1rem 2rem; }
+.filter-gruppe { display: inline-flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+.eintrag-daten { display: flex; flex-direction: column; align-items: flex-end; gap: .1rem; text-align: right; }
+.eintrag-daten time { font-weight: 600; color: var(--tinte); }
+.schneiden { margin: -.25rem 0 1.25rem; }
+.schneiden > .hilfe { display: inline; margin-left: .5rem; }
+.schneiden-spieler { margin: .75rem 0; max-width: 40rem; aspect-ratio: 16 / 9; background: #000; }
+.schneiden-spieler iframe, .schneiden-spieler > div { width: 100%; height: 100%; }
+.schneiden-knoepfe { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+.schneiden-knoepfe .hilfe { flex-basis: 100%; }
+@media (max-width: 48rem) {
+  .eintrag-daten { align-items: flex-start; text-align: left; }
+}
+.eintrag-kopf { align-items: flex-start; }
+.filter select { width: auto; max-width: 100%; }
+[hidden] { display: none !important; }
+.schneiden-reihe { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; width: 100%; }
+.feinjustierung { display: inline-flex; gap: .25rem; }
+.feinjustierung button { font: inherit; font-size: .85rem; padding: .35rem .55rem; border: 2px solid var(--tinte); background: #fff; color: var(--tinte); border-radius: 4px; cursor: pointer; }
+.feinjustierung button:hover { background: var(--gelb); }
+
+.verlauf + .verlauf { margin-top: 2.5rem; }
+.verlauf .linie.noetig { stroke: var(--rot); }
+.verlauf .linie.ist { stroke: var(--flamme); stroke-dasharray: none; }
+.verlauf .punkt.noetig { stroke: var(--rot); }
+.verlauf .letzter.noetig { fill: var(--rot); }
+
+.verlauf .linie.vorjahr { stroke: var(--grau); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.verlauf .vorjahr-text { fill: var(--grau); font-weight: 700; }
+.strom-text { max-width: 70ch; }
+.strom-text p { margin: 0 0 1rem; }
+.quellen-hinweis { font-size: .9rem; color: var(--grau); max-width: 70ch; }
+
+.verlauf .gitter.stark { stroke: #d5cfbf; }
+.verlauf .druckzone { fill: rgba(242, 106, 27, .07); }
+.verlauf .druckzone-text { fill: #b4561a; font-size: 11px; }
+.verlauf .ziel-text.klein { font-size: 11px; }
+.verlauf .ziel-linie.marke { stroke-width: 3; }
+.verlauf .punkt.tief { fill: var(--rot); stroke: #fff; }
+.verlauf .letzter.tief { fill: var(--rot); font-size: 12px; }
+
+.verlauf .linie.druck { stroke: var(--orange); }
+.verlauf .punkt.druck { stroke: var(--orange); }
+.verlauf .letzter.druck { fill: var(--orange); }
+
+.besucher { font-size: 1rem; }
+.besucher b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.hilfe-hell { color: #9fb0c2; font-size: .85rem; }
+.verlauf .flaeche.rot { fill: rgba(200, 16, 46, .08); }
