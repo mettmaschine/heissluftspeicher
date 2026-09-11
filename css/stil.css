@@ -234,3 +234,9 @@ textarea { resize: vertical; }
 .verlauf .linie.ist { stroke: var(--flamme); stroke-dasharray: none; }
 .verlauf .punkt.noetig { stroke: var(--rot); }
 .verlauf .letzter.noetig { fill: var(--rot); }
+
+.verlauf .linie.vorjahr { stroke: var(--grau); stroke-width: 2.5; stroke-dasharray: 7 5; }
+.verlauf .vorjahr-text { fill: var(--grau); font-weight: 700; }
+.strom-text { max-width: 70ch; }
+.strom-text p { margin: 0 0 1rem; }
+.quellen-hinweis { font-size: .9rem; color: var(--grau); max-width: 70ch; }

@@ -1,17 +1,104 @@
 {
-  "_hinweis": "Ein Punkt je Zeile. Neue Werte einfach unten anhängen (Komma nach der vorherigen Zeile nicht vergessen).",
-  "quelle": "Werte aus Presseberichten und Bundestagsdrucksache 21/3452 (GIE AGSI+, INES, Bundesnetzagentur). Tagesgenaue Werte: agsi.gie.eu.",
+  "_hinweis": "Ein Punkt je Zeile. Neue Werte in 'punkte' unten anhängen (Komma nach der vorherigen Zeile nicht vergessen). 'vorjahr' enthält die Saison davor; sie wird im Diagramm um ein Jahr verschoben darübergelegt.",
+  "quelle": "Werte aus Presseberichten, INES, Bundesnetzagentur, SMARD und Bundestagsdrucksache 21/3452 (Basis: GIE AGSI+). Tagesgenaue Werte: agsi.gie.eu.",
   "punkte": [
-    { "datum": "2025-09-01", "prozent": 71.0 },
-    { "datum": "2025-11-01", "prozent": 75.0 },
-    { "datum": "2025-12-13", "prozent": 63.0 },
-    { "datum": "2026-01-05", "prozent": 53.0 },
-    { "datum": "2026-01-22", "prozent": 40.0 },
-    { "datum": "2026-02-01", "prozent": 31.0 },
-    { "datum": "2026-03-24", "prozent": 22.0 },
-    { "datum": "2026-04-16", "prozent": 23.0 },
-    { "datum": "2026-06-11", "prozent": 35.0 },
-    { "datum": "2026-08-03", "prozent": 47.0 },
-    { "datum": "2026-09-01", "prozent": 53.4 }
+    {
+      "datum": "2025-09-01",
+      "prozent": 71.0
+    },
+    {
+      "datum": "2025-09-08",
+      "prozent": 74.1
+    },
+    {
+      "datum": "2025-11-01",
+      "prozent": 75.0
+    },
+    {
+      "datum": "2025-12-13",
+      "prozent": 63.0
+    },
+    {
+      "datum": "2026-01-05",
+      "prozent": 53.0
+    },
+    {
+      "datum": "2026-01-22",
+      "prozent": 40.0
+    },
+    {
+      "datum": "2026-02-01",
+      "prozent": 31.0
+    },
+    {
+      "datum": "2026-03-05",
+      "prozent": 21.0
+    },
+    {
+      "datum": "2026-03-24",
+      "prozent": 22.0
+    },
+    {
+      "datum": "2026-04-16",
+      "prozent": 23.0
+    },
+    {
+      "datum": "2026-05-01",
+      "prozent": 26.0
+    },
+    {
+      "datum": "2026-05-25",
+      "prozent": 30.3
+    },
+    {
+      "datum": "2026-06-11",
+      "prozent": 35.0
+    },
+    {
+      "datum": "2026-08-03",
+      "prozent": 47.0
+    },
+    {
+      "datum": "2026-09-01",
+      "prozent": 53.4
+    },
+    {
+      "datum": "2026-09-08",
+      "prozent": 54.8
+    }
+  ],
+  "vorjahr": [
+    {
+      "datum": "2024-09-25",
+      "prozent": 95.0
+    },
+    {
+      "datum": "2024-11-03",
+      "prozent": 98.0
+    },
+    {
+      "datum": "2025-01-08",
+      "prozent": 77.0
+    },
+    {
+      "datum": "2025-02-01",
+      "prozent": 50.0
+    },
+    {
+      "datum": "2025-04-01",
+      "prozent": 29.0
+    },
+    {
+      "datum": "2025-06-30",
+      "prozent": 51.0
+    },
+    {
+      "datum": "2025-09-01",
+      "prozent": 71.0
+    },
+    {
+      "datum": "2025-09-08",
+      "prozent": 74.1
+    }
   ]
 }

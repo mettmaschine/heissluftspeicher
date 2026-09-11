@@ -148,6 +148,13 @@
           (z.k ? '<small>' + esc(z.k) + '</small>' : '') + '</dd></div>';
       }).join('');
     }
+    if (lage.strom) {
+      setText('#strom-kraftwerke', fmtZahl(lage.strom.gaskraftwerke_gw || 35));
+      setText('#strom-spitze', fmtZahl(lage.strom.gasstrom_spitze_gw || 20));
+      setText('#strom-spitze-2', fmtZahl(lage.strom.gasstrom_spitze_gw || 20));
+      setText('#strom-speicheranteil', fmtZahl(lage.strom.speicheranteil_januar_prozent || 38));
+      setText('#strom-druckgrenze', fmtZahl(lage.strom.druckgrenze_prozent || 50));
+    }
     if (lage.hinweis) {
       var hi = $('#countdown-hinweis');
       if (hi && !lage.hinweis_aus) hi.textContent = lage.hinweis;
@@ -282,6 +289,17 @@
     s += '<path class="flaeche" d="' + pfad + ' L' + x(t1).toFixed(1) + ' ' + y(0) + ' L' + x(t0).toFixed(1) + ' ' + y(0) + ' Z"/>';
     s += '<path class="linie" d="' + pfad + '"/>';
 
+    // Vorjahressaison, um ein Jahr nach vorn verschoben, damit gleiche Kalendertage übereinanderliegen
+    var vorjahr = (verlauf.vorjahr || []).filter(function (p) { return p.datum && isFinite(p.prozent); })
+      .map(function (p) { var d = new Date(p.datum + 'T00:00:00'); d.setFullYear(d.getFullYear() + 1); return { t: d, v: Number(p.prozent) }; })
+      .filter(function (p) { return p.t >= t0 && p.t <= t1; })
+      .sort(function (a, b) { return a.t - b.t; });
+    if (vorjahr.length >= 2) {
+      s += '<path class="linie vorjahr" d="' + vorjahr.map(function (p, i) { return (i ? 'L' : 'M') + x(p.t).toFixed(1) + ' ' + y(p.v).toFixed(1); }).join(' ') + '"/>';
+      var vl = vorjahr[vorjahr.length - 1];
+      s += '<text class="achse vorjahr-text" x="' + (x(vl.t) - 8).toFixed(1) + '" y="' + (y(vl.v) + 18).toFixed(1) + '" text-anchor="end">Vorjahr ' + fmtZahl(vl.v, 1) + ' %</text>';
+    }
+
     // Monatsmarken
     var m = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
     while (m <= t1) {
@@ -298,7 +316,7 @@
       fmtZahl(letzter.prozent, 1) + ' %</text>';
     s += '</svg>';
     ziel_el.innerHTML = s;
-    setText('#verlauf-quelle', verlauf.quelle || '');
+    setText('#verlauf-quelle', (vorjahr.length >= 2 ? 'Blau: Saison ' + t0.getFullYear() + '/' + String(t1.getFullYear()).slice(2) + '. Grau gestrichelt: die Saison davor, auf dieselben Kalendertage gelegt. ' : '') + (verlauf.quelle || ''));
   }
 
   /* ----------------------------------------------------------- Countdown */

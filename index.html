@@ -19,6 +19,7 @@
   <nav class="navi" aria-label="Seitenbereiche">
     <a href="#lage">Lage</a>
     <a href="#rechnung">Rechnung</a>
+    <a href="#strom">Strom</a>
     <a href="#zaehler">Bullshit-Zähler</a>
     <a href="#melden">Phrase melden</a>
     <a href="#bingo">Bingo</a>
@@ -107,7 +108,7 @@
   <p class="einleitung">Alle Werte werden aus dem aktuellen Füllstand berechnet. Keine Prognose, nur Dreisatz.</p>
   <dl class="rechnung" id="rechnung-liste"></dl>
   <figure class="verlauf">
-    <h3>So lief das letzte Jahr</h3>
+    <h3>So lief das letzte Jahr, und so lief das Jahr davor</h3>
     <div id="verlauf-diagramm"></div>
     <figcaption id="verlauf-quelle"></figcaption>
   </figure>
@@ -116,6 +117,23 @@
     <div id="bedarf-diagramm"></div>
     <figcaption id="bedarf-erklaerung"></figcaption>
   </figure>
+</section>
+
+<section class="abschnitt" id="strom">
+  <h2>Die Stromfrage</h2>
+  <p class="einleitung">Gas heizt nicht nur Wohnungen. Wenn im Winter tagelang weder Wind weht noch Sonne scheint, halten Gaskraftwerke das Stromnetz. Ihr Brennstoff kommt dann zu einem großen Teil aus denselben Speichern, um die es hier geht.</p>
+  <dl class="rechnung">
+    <div><dt>Gaskraftwerke in Deutschland</dt><dd><span id="strom-kraftwerke">35</span> GW<small>installierte Leistung; sie allein reichen laut Fachleuten schon heute nicht, um Dunkelflauten zu überbrücken</small></dd></div>
+    <div><dt>Gasverstromung in Dunkelflauten des letzten Winters</dt><dd>bis zu <span id="strom-spitze">20</span> GW<small>zeitweise Leistung aus Gaskraftwerken, wenn Wind und Sonne fast ausfallen</small></dd></div>
+    <div><dt>Anteil der Speicher am Gasverbrauch</dt><dd><span id="strom-speicheranteil">38</span> %<small>zeitweise im Januar 2026; jede Kilowattstunde Strom aus Gas leert die Speicher mit</small></dd></div>
+    <div class="warnung"><dt>Druckgrenze der Speicher</dt><dd>unter <span id="strom-druckgrenze">50</span> %<small>ab hier sinkt der Druck und damit die Menge, die pro Stunde herauskommt; das Kissengas ganz unten ist tabu</small></dd></div>
+  </dl>
+  <div class="strom-text">
+    <p><strong>Warum das zusammengehört:</strong> Eine Dunkelflaute im Januar dauert nach Angaben von Netzfachleuten 72 bis 120 Stunden und kommt etwa sechsmal im Jahr vor. In diesen Stunden laufen die Gaskraftwerke mit voller Kraft, während gleichzeitig Millionen Heizungen auf Hochtouren sind. Der Gasverbrauch erreicht dann seinen Jahresspitzenwert, und den decken die Speicher, weil Pipelines und LNG-Terminals nicht beliebig schneller liefern können.</p>
+    <p><strong>Das Problem ist nicht nur die Menge, sondern das Tempo:</strong> Ein Gasspeicher ist kein Tank mit Hahn. Je leerer er ist, desto niedriger der Druck und desto weniger Gas kommt pro Stunde heraus. Der Speicherbetreiber Uniper beziffert den Beginn dieses Effekts auf rund 50 % Füllstand; die Fernleitungsnetzbetreiber bestätigen, dass es in Spitzenlastsituationen eng werden kann, obwohl noch Gas im Speicher ist. Ein Speicher, der im Januar bei 20 % steht, ist für die Spitzenlast also schon „leer“, lange bevor er bei null ankommt.</p>
+    <p><strong>Die offene Frage:</strong> Was passiert, wenn im Januar drei Dinge zusammenfallen: Dunkelflaute, Kältewelle und Speicher unter der Druckgrenze? Woher kommen dann die <span id="strom-spitze-2">20</span> GW für das Stromnetz, wenn das Gas nicht schnell genug aus dem Boden kommt? Die Bundesregierung setzt auf neue Gaskraftwerke, die frühestens 2031 laufen. Netzbetreiber verweisen auf Stromimporte und Reservekraftwerke. Eine Antwort für diesen Winter, mit Zahlen, hat bisher niemand vorgelegt. Wer eine findet, kann sie unten melden; wer stattdessen eine Phrase findet, ebenfalls.</p>
+  </div>
+  <p class="quellen-hinweis">Quellen: <a href="https://background.tagesspiegel.de/energie-klima/ausspeisekraft-der-gasspeicher-sinkt" target="_blank" rel="noopener">Tagesspiegel Background: Ausspeisekraft der Gasspeicher sinkt</a>, <a href="https://www.giga.de/tech/gasspeicher-nur-zu-37-prozent-gefuellt-doch-das-eigentliche-problem-liegt-woanders--01KFZPE8GVE03YD5GBGC73MDT4" target="_blank" rel="noopener">Uniper und Fernleitungsnetzbetreiber zur Druckgrenze</a>, <a href="https://www.lbbw.de/artikel/energiewende/gaskraftwerke-kraftwerksstrategie_amfgag8jp6_d.html" target="_blank" rel="noopener">LBBW: Kraftwerksstrategie, 35 GW Gaskraftwerke</a>, <a href="https://www.erneuerbareenergien.de/energiemarkt/energierecht/brauchen-wir-wirklich-neue-gaskraftwerke-gegen-die-dunkelflaute" target="_blank" rel="noopener">Dauer und Häufigkeit von Dunkelflauten</a>, <a href="https://dpenergietechnik.com/blog/gasmangellage-gasspeicher-deutschland/" target="_blank" rel="noopener">Speicheranteil im Januar 2026</a>, <a href="https://www.smard.de" target="_blank" rel="noopener">SMARD (Bundesnetzagentur): Stromerzeugung nach Energieträger</a>.</p>
 </section>
 
 <section class="abschnitt" id="zaehler">
@@ -181,6 +199,7 @@
           <option>Verharmlosung</option>
           <option>Schuldverschiebung</option>
           <option>Worthülse</option>
+          <option>Stromversorgung</option>
           <option>Sonstiges</option>
         </select>
       </div>
