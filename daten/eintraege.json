@@ -1,5 +1,24 @@
 [
   {
+    "id": 5,
+    "datum": "2026-09-09",
+    "eingereicht": "2026-09-11",
+    "wer": "Katherina Reiche",
+    "funktion": "Bundesministerin für Wirtschaft und Energie",
+    "zitat": "der Staat darf nicht selbst zum Preistreiber werden",
+    "sinngemaess": false,
+    "kategorie": "Schuldverschiebung",
+    "kontext": "Was ist schlimmer, hoher Preis oder kein Gas und somit wegen der Gasverstromung eventuell auch kein Strom im Winter?",
+    "quellen": [],
+    "youtube": {
+      "url": "https://www.youtube.com/watch?v=Arr_yLvpzLk",
+      "start": 360,
+      "ende": 498
+    },
+    "dokumente": [],
+    "meldung_id": "0fa62c5266c54ac592b93577"
+  },
+  {
     "id": 4,
     "datum": "2026-09-09",
     "eingereicht": "2026-09-11",
