@@ -1,5 +1,24 @@
 [
   {
+    "id": 2,
+    "datum": "2026-09-09",
+    "eingereicht": "2026-09-11",
+    "wer": "Katherina Reiche",
+    "funktion": "Bundesministerin für Wirtschaft und Energie",
+    "zitat": "Deutschland versorgt sich zu 38% aus Importen aus den Niederlanden und Belgien und zu 18% aus LNG.",
+    "sinngemaess": false,
+    "kategorie": "Verharmlosung",
+    "kontext": "ie Importe aus den Niederlanden und Belgien sind auch nur LNG und dieses kommt momentan nicht durch die Strasse von Hormuz. Der Ernst der Lage wird verharmlost.",
+    "quellen": [],
+    "youtube": {
+      "url": "https://www.youtube.com/watch?v=Arr_yLvpzLk",
+      "start": 132,
+      "ende": 255
+    },
+    "dokumente": [],
+    "meldung_id": "54576151826f449d9f532bf4"
+  },
+  {
     "id": 1,
     "datum": "2026-01-22",
     "eingereicht": "2026-09-11",
