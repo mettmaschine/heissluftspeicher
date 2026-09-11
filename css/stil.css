@@ -228,3 +228,9 @@ textarea { resize: vertical; }
 .feinjustierung { display: inline-flex; gap: .25rem; }
 .feinjustierung button { font: inherit; font-size: .85rem; padding: .35rem .55rem; border: 2px solid var(--tinte); background: #fff; color: var(--tinte); border-radius: 4px; cursor: pointer; }
 .feinjustierung button:hover { background: var(--gelb); }
+
+.verlauf + .verlauf { margin-top: 2.5rem; }
+.verlauf .linie.noetig { stroke: var(--rot); }
+.verlauf .linie.ist { stroke: var(--flamme); stroke-dasharray: none; }
+.verlauf .punkt.noetig { stroke: var(--rot); }
+.verlauf .letzter.noetig { fill: var(--rot); }

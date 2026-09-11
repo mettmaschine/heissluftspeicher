@@ -164,10 +164,96 @@
 
   /* ------------------------------------------------------------- Verlauf */
 
-  function ladeVerlauf(ziel) {
-    return ladeJson('daten/verlauf.json').then(function (v) { zeichneVerlauf(v, ziel); }).catch(function () {
+  function ladeVerlauf(lage) {
+    var ziel = lage ? Number(lage.ziel_prozent || 80) : 80;
+    return ladeJson('daten/verlauf.json').then(function (v) {
+      zeichneVerlauf(v, ziel);
+      if (lage) zeichneBedarf(v, lage);
+    }).catch(function () {
       var el = $('#verlauf-diagramm'); if (el) el.innerHTML = '';
     });
+  }
+
+  // Für jeden Tag seit dem Tiefstand: Wie viele Prozentpunkte hätten ab diesem Tag täglich
+  // eingespeichert werden müssen, um die Vorgabe noch zu erreichen? Dazu die tatsächliche Einspeicherung.
+  function zeichneBedarf(verlauf, lage) {
+    var el = $('#bedarf-diagramm'); if (!el) return;
+    var ziel = Number(lage.ziel_prozent || 80);
+    var zielDatum = new Date((lage.ziel_datum || '2026-11-01') + 'T00:00:00');
+    var punkte = (verlauf.punkte || []).filter(function (x) { return x.datum && isFinite(x.prozent); })
+      .map(function (x) { return { t: new Date(x.datum + 'T00:00:00'), v: Number(x.prozent) }; })
+      .sort(function (a, b) { return a.t - b.t; });
+    var stand = new Date(String(lage.stand_datum || '').slice(0, 10) + 'T00:00:00');
+    if (!isNaN(stand) && isFinite(lage.fuellstand_prozent) && (!punkte.length || stand > punkte[punkte.length - 1].t)) {
+      punkte.push({ t: stand, v: Number(lage.fuellstand_prozent) });
+    }
+    var tief = 0; punkte.forEach(function (p, i) { if (p.v < punkte[tief].v) tief = i; });
+    punkte = punkte.slice(tief);
+    if (punkte.length < 2) { el.innerHTML = ''; return; }
+
+    var heute = new Date(); heute.setHours(0, 0, 0, 0);
+    if (heute >= zielDatum) heute = new Date(zielDatum.getTime() - TAG);
+    if (heute < punkte[punkte.length - 1].t) heute = punkte[punkte.length - 1].t;
+
+    function fuellstandAm(t) {
+      if (t >= punkte[punkte.length - 1].t) return punkte[punkte.length - 1].v;
+      for (var i = 0; i < punkte.length - 1; i++) {
+        var a = punkte[i], b = punkte[i + 1];
+        if (t >= a.t && t <= b.t) return a.v + (b.v - a.v) * (t - a.t) / (b.t - a.t);
+      }
+      return punkte[0].v;
+    }
+    var noetig = [];
+    for (var t = new Date(punkte[0].t); t <= heute; t = new Date(t.getTime() + TAG)) {
+      var rest = Math.round((zielDatum - t) / TAG); if (rest <= 0) break;
+      noetig.push({ t: t, w: Math.max(0, (ziel - fuellstandAm(t)) / rest) });
+    }
+    var ist = [];
+    for (var k = 0; k < punkte.length - 1; k++) {
+      var d = Math.round((punkte[k + 1].t - punkte[k].t) / TAG);
+      if (d > 0) ist.push({ von: punkte[k].t, bis: punkte[k + 1].t, w: (punkte[k + 1].v - punkte[k].v) / d });
+    }
+    if (!noetig.length) { el.innerHTML = ''; return; }
+
+    var maxW = 0; noetig.forEach(function (p) { maxW = Math.max(maxW, p.w); }); ist.forEach(function (s) { maxW = Math.max(maxW, s.w); });
+    var schritt = maxW > 1.2 ? 0.5 : (maxW > 0.6 ? 0.25 : 0.1);
+    var yMax = Math.ceil((maxW * 1.15) / schritt) * schritt || schritt;
+    var B = 640, H = 280, L = 52, R = 16, O = 20, U = 36;
+    var t0 = noetig[0].t, t1 = noetig[noetig.length - 1].t;
+    var x = function (t) { return t1 > t0 ? L + (t - t0) / (t1 - t0) * (B - L - R) : L; };
+    var y = function (w) { return O + (yMax - w) / yMax * (H - O - U); };
+
+    var s = '<svg viewBox="0 0 ' + B + ' ' + H + '" role="img" aria-label="Nötige und tatsächliche tägliche Einspeicherung in Prozentpunkten">';
+    for (var g = 0; g <= yMax + 1e-9; g += schritt) {
+      s += '<line class="gitter" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(g).toFixed(1) + '" y2="' + y(g).toFixed(1) + '"/>' +
+        '<text class="achse" x="' + (L - 6) + '" y="' + (y(g) + 4).toFixed(1) + '" text-anchor="end">' + fmtZahl(g, 2) + '</text>';
+    }
+    var m = new Date(t0.getFullYear(), t0.getMonth() + 1, 1);
+    while (m <= t1) {
+      s += '<text class="achse" x="' + x(m).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="middle">' + esc(m.toLocaleDateString('de-DE', { month: 'short' })) + '</text>';
+      m = new Date(m.getFullYear(), m.getMonth() + 1, 1);
+    }
+    // Tatsächliche Einspeicherung (Stufen zwischen den Messpunkten)
+    var pfadIst = '';
+    ist.forEach(function (seg, i) {
+      var bis = seg.bis > t1 ? t1 : seg.bis;
+      pfadIst += (i ? 'L' : 'M') + x(seg.von).toFixed(1) + ' ' + y(seg.w).toFixed(1) + ' L' + x(bis).toFixed(1) + ' ' + y(seg.w).toFixed(1) + ' ';
+    });
+    if (pfadIst) s += '<path class="linie ist" d="' + pfadIst + '"/>';
+    // Nötige Einspeicherung
+    var pfad = noetig.map(function (p, i) { return (i ? 'L' : 'M') + x(p.t).toFixed(1) + ' ' + y(p.w).toFixed(1); }).join(' ');
+    s += '<path class="linie noetig" d="' + pfad + '"/>';
+    var letzt = noetig[noetig.length - 1];
+    s += '<circle class="punkt noetig" cx="' + x(letzt.t).toFixed(1) + '" cy="' + y(letzt.w).toFixed(1) + '" r="4"/>' +
+      '<text class="letzter noetig" x="' + (x(letzt.t) - 8).toFixed(1) + '" y="' + (y(letzt.w) - 10).toFixed(1) + '" text-anchor="end">heute ' + fmtZahl(letzt.w, 2) + '</text>';
+    s += '</svg>';
+    el.innerHTML = s;
+
+    var istLetzt = ist.length ? ist[ist.length - 1].w : null;
+    setText('#bedarf-erklaerung', 'Rote Linie: Prozentpunkte, die ab dem jeweiligen Tag täglich eingespeichert werden müssten, um ' + fmtZahl(ziel) +
+      ' % am ' + fmtDatum(lage.ziel_datum) + ' zu erreichen; berechnet aus dem Füllstand des Tages und den verbleibenden Tagen. ' +
+      'Blaue Linie: tatsächlich erreichte Einspeicherung, Durchschnitt zwischen den Messpunkten' +
+      (istLetzt !== null ? ' (zuletzt ' + fmtZahl(istLetzt, 2) + ' Prozentpunkte pro Tag)' : '') + '. Heute nötig: ' + fmtZahl(letzt.w, 2) + '.');
   }
 
   function zeichneVerlauf(verlauf, ziel) {
@@ -580,7 +666,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     tick(); setInterval(tick, 1000);
-    ladeLage().then(function (lage) { ladeVerlauf(lage ? Number(lage.ziel_prozent || 80) : 80); });
+    ladeLage().then(function (lage) { ladeVerlauf(lage); });
     ladeEintraege();
     ladeBingo();
     richteFormularEin();
