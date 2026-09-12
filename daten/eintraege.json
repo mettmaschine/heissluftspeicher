@@ -1,5 +1,29 @@
 [
   {
+    "id": 7,
+    "datum": "2026-09-12",
+    "eingereicht": "2026-09-12",
+    "wer": "Klaus Müller",
+    "funktion": "Behördenchef der Bundesnetzagentur",
+    "zitat": "Wir haben jetzt schon etwas mehr Gas in den Speichern als wir im gesamten letzten Winterhalbjahr aus den Speichern entnommen haben.",
+    "sinngemaess": false,
+    "kategorie": "Beschwichtigung",
+    "kontext": "Weil es impliziert, wir hätten genug für den Winter, aber völlig außer Acht lässt, dass die Speicher dann nahe 0 Prozent wären, keinen Druck mehr hätten und lange nicht mehr das liefern könnten, was benötigt würde.",
+    "quellen": [
+      {
+        "titel": "zdfheute.de",
+        "url": "https://www.zdfheute.de/wirtschaft/energie-gasspeicher-winter-bundesnetzagentur-100.html"
+      }
+    ],
+    "youtube": {
+      "url": "",
+      "start": 0,
+      "ende": 0
+    },
+    "dokumente": [],
+    "meldung_id": "8de6900bbe2e4b75b0a71dd4"
+  },
+  {
     "id": 6,
     "datum": "2026-09-09",
     "eingereicht": "2026-09-11",
