@@ -257,3 +257,7 @@ textarea { resize: vertical; }
 .besucher b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
 .hilfe-hell { color: #9fb0c2; font-size: .85rem; }
 .verlauf .flaeche.rot { fill: rgba(200, 16, 46, .08); }
+
+.held-kicker { margin: 0 0 .75rem; font-size: 1.05rem; font-weight: 600; color: #3b4652; }
+.seite .verlauf { margin: 1.5rem 0; }
+.seite .rechnung { margin: 1.5rem 0; }

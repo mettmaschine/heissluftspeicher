@@ -99,7 +99,11 @@
 
     // Held
     setText('#held-prozent', fmtZahl(p, 1));
+    setText('#held-kicker-prozent', fmtZahl(p, 1));
     setText('#held-ziel', fmtZahl(ziel));
+    if (document.body.getAttribute('data-titel') === 'fuellstand') {
+      document.title = 'Gasspeicherfüllstand heute: ' + fmtZahl(p, 1) + ' % (Stand ' + fmtDatum(lage.stand_datum) + ') – Heißluftspeicher';
+    }
     setText('#held-datum', fmtDatum(lage.stand_datum) + (lage.automatisch ? ' (täglich automatisch abgerufen)' : ''));
     var q = $('#held-quelle');
     if (q && lage.quelle_url) { q.href = lage.quelle_url; q.textContent = lage.quelle_name || lage.quelle_url; }
@@ -437,6 +441,7 @@
   }
 
   function ladeRisiko(verlauf, lage) {
+    if (!$('#risiko-liste')) return;
     var daten;
     ladeJson('daten/winter.json').then(function (d) {
       daten = d;
@@ -458,6 +463,7 @@
     if (!isNaN(stand) && isFinite(lage.fuellstand_prozent) && (!punkte.length || stand > punkte[punkte.length - 1].t)) punkte.push({ t: stand, v: Number(lage.fuellstand_prozent) });
     var fns = winterFunktionen(daten);
     var listeEl = $('#risiko-liste');
+    if (!listeEl) return;
     if (punkte.length < 2 || fns.length < 3) { if (listeEl) listeEl.innerHTML = '<p class="fehler">Für die Risikorechnung fehlen Daten (Verlauf oder Winter).</p>'; return; }
 
     var f = interpolator(punkte), letzter = punkte[punkte.length - 1];

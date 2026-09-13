@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gasspeicherfüllstand heute: Was die Zahl bedeutet – Heißluftspeicher</title>
+<meta name="description" content="Gasspeicherfüllstand Deutschland aktuell: Was die Prozentzahl misst, wie viel Gas dahintersteckt, welche Vorgaben zum 1. November und 1. Februar gelten und ab wann die Speicher nicht mehr schnell genug liefern.">
+<meta property="og:title" content="Gasspeicherfüllstand heute: Was die Zahl bedeutet">
+<meta property="og:description" content="Was der Füllstand der deutschen Gasspeicher misst, welche Vorgaben gelten und warum unter 50 % der Druck sinkt.">
+<meta property="og:image" content="bilder/vorschau.png">
+<link rel="icon" href="bilder/symbol.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/stil.css">
+</head>
+<body data-titel="fuellstand">
+<header class="kopf">
+  <a class="marke" href="./">Heißluft<span>speicher</span></a>
+  <nav class="navi"><a href="./">Startseite</a> <a href="gasmangellage.html">Gasmangellage</a> <a href="./#zaehler">Bullshit-Zähler</a></nav>
+</header>
+<main class="seite">
+  <h1>Gasspeicherfüllstand heute: <span id="held-prozent">54,8</span> %</h1>
+  <p>Stand: <span id="held-datum">8. September 2026</span>. Quelle: <a id="held-quelle" href="https://agsi.gie.eu/data-overview/DE" target="_blank" rel="noopener">GIE AGSI+</a>. Vorgabe zum 1. November: <span id="held-ziel">80</span> %.</p>
+
+  <h2>Was die Prozentzahl misst</h2>
+  <p>Der Füllstand gibt an, wie viel des sogenannten Arbeitsgases in den deutschen Speichern liegt. Arbeitsgas ist der Teil, der eingespeichert und wieder entnommen werden kann; in Deutschland sind das zusammen rund 251 Terawattstunden, etwa ein Viertel des Jahresverbrauchs. Nicht mitgezählt wird das Kissengas: Es bleibt dauerhaft im Speicher, weil es den Druck hält. 100 % heißt also nicht „bis zum Rand voll“, und 0 % heißt nicht „leer“, sondern „Arbeitsgas aufgebraucht“.</p>
+  <p>Die Betreiber melden die Werte täglich an die europäische Plattform AGSI+ der Gas Infrastructure Europe; die Bundesnetzagentur übernimmt sie in ihren Lagebericht. Ein Gastag beginnt um 6 Uhr, deshalb hinken die Zahlen einen Tag hinterher.</p>
+
+  <h2>Welche Vorgaben gelten</h2>
+  <p>Die Gasspeicherfüllstandsverordnung schreibt für den 1. November 80 % vor (Regelfall) und für den 1. Februar 30 %. Für einige große Porenspeicher, darunter Rehden, gilt zum 1. November nur 45 %. Bis 2025 lag die Novembervorgabe bei 90 %; sie wurde abgesenkt, nachdem sie 2025 nicht mehr erreichbar war. Die Vorgaben sind Ziele; erreicht werden müssen sie von den Marktteilnehmern, die Speicherkapazität buchen, nicht vom Staat selbst.</p>
+
+  <h2>Warum die Zahl unter 50 % anders zu lesen ist</h2>
+  <p>Ein Speicher ist kein Tank mit Hahn. Je leerer er ist, desto niedriger der Druck und desto weniger Gas kommt pro Stunde heraus. Nach Angaben des Speicherbetreibers Uniper beginnt dieser Effekt bei rund 50 % Füllstand; die Fernleitungsnetzbetreiber bestätigen, dass es in Spitzenlaststunden knapp werden kann, obwohl noch Gas im Speicher ist. Für die Versorgungssicherheit zählt deshalb nicht nur die Menge, sondern das Tempo, mit dem sie verfügbar ist. Mehr dazu im Abschnitt <a href="./#strom">Die Stromfrage</a>.</p>
+
+  <h2>So lief das letzte Jahr, und so lief das Jahr davor</h2>
+  <figure class="verlauf">
+    <div id="verlauf-diagramm"></div>
+    <figcaption id="verlauf-quelle"></figcaption>
+  </figure>
+
+  <h2>Die Rechnung bis zum 1. November</h2>
+  <dl class="rechnung" id="rechnung-liste"></dl>
+  <p>Wie wahrscheinlich es ist, dass die Speicher in diesem Winter unter 20 % fallen, steht auf der <a href="./#risiko">Startseite unter „Das Risiko, in Zahlen“</a>; was eine Gasmangellage rechtlich bedeutet, auf der Seite <a href="gasmangellage.html">Gasmangellage</a>.</p>
+
+  <h2>Quellen</h2>
+  <ul class="quellen">
+    <li><a href="https://agsi.gie.eu/data-overview/DE" target="_blank" rel="noopener">GIE AGSI+: Tageswerte der deutschen Speicher</a></li>
+    <li><a href="https://www.bundesnetzagentur.de/DE/Gasversorgung/aktuelle_gasversorgung/_svg/Gasspeicher_Fuellstand/Speicherfuellstand.html" target="_blank" rel="noopener">Bundesnetzagentur: Verlauf der Speicherfüllstände und gesetzliche Zielvorgaben</a></li>
+    <li><a href="https://background.tagesspiegel.de/energie-klima/ausspeisekraft-der-gasspeicher-sinkt" target="_blank" rel="noopener">Tagesspiegel Background: Ausspeisekraft der Gasspeicher sinkt</a></li>
+  </ul>
+</main>
+<footer class="fuss">
+  <div class="innen">
+    <p class="fuss-links"><a href="./">Startseite</a> <a href="gasmangellage.html">Gasmangellage</a> <a href="impressum.html">Impressum</a> <a href="datenschutz.html">Datenschutz</a></p>
+  </div>
+</footer>
+<script src="js/app.js"></script>
+</body>
+</html>

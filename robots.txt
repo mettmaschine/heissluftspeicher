@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /freigabe.html
+Disallow: /danke.html
+Disallow: /freigabe
+Disallow: /besucher
+
+Sitemap: https://heissluftspeicher.de/sitemap.xml
