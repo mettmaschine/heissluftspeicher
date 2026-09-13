@@ -48,6 +48,9 @@
     return h ? h + ':' + ms : ms;
   }
 
+  function naechsterTag(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1); }
+  function nurDatum(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+
   function ladeJson(pfad) {
     return fetch(pfad, { cache: 'no-cache' }).then(function (r) {
       if (!r.ok) throw new Error(pfad + ' konnte nicht geladen werden (HTTP ' + r.status + ')');
@@ -238,11 +241,30 @@
           verlauf.taeglich = true;
         }
       }
+      if (lage && verlauf.taeglich) aktualisiereVorjahr(lage, verlauf);
       zeichneVerlauf(verlauf, ziel, lage || {});
       if (lage) { zeichneBedarf(verlauf, lage); ladeRisiko(verlauf, lage); }
     }).catch(function () {
       var el = $('#verlauf-diagramm'); if (el) el.innerHTML = '';
     });
+  }
+
+  // Vergleichswert von genau vor einem Jahr aus den Tageswerten holen und die Anzeige neu aufbauen
+  function aktualisiereVorjahr(lage, verlauf) {
+    var stand = String(lage.stand_datum || '').slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(stand)) return;
+    var gesucht = (Number(stand.slice(0, 4)) - 1) + stand.slice(4);
+    var alle = (verlauf.vorjahr || []).concat(verlauf.punkte || []);
+    var treffer = null, abstand = Infinity;
+    alle.forEach(function (p) {
+      if (!p.datum || !isFinite(p.prozent)) return;
+      var d = Math.abs(new Date(p.datum + 'T00:00:00') - new Date(gesucht + 'T00:00:00')) / TAG;
+      if (d < abstand && d <= 3) { abstand = d; treffer = p; }
+    });
+    if (!treffer) return;
+    lage.vorjahr_prozent = Number(treffer.prozent);
+    lage.vorjahr_datum = treffer.datum;
+    zeigeLage(lage);
   }
 
   function zeichneVerlauf(verlauf, ziel, lage) {
@@ -260,14 +282,14 @@
     var grenze = lage && lage.strom && isFinite(lage.strom.druckgrenze_prozent) ? Number(lage.strom.druckgrenze_prozent) : 0;
     if (grenze > 0) {
       s += '<rect class="druckzone" x="' + L + '" y="' + y(grenze).toFixed(1) + '" width="' + (B - L - R) + '" height="' + (y(0) - y(grenze)).toFixed(1) + '"/>' +
-        '<text class="achse druckzone-text" x="' + (L + 6) + '" y="' + (y(grenze) + 14).toFixed(1) + '">unter ' + grenze + ' %: Druck und Ausspeicherleistung sinken</text>';
+        '<text class="achse druckzone-text" x="' + (B - R - 6) + '" y="' + (y(0) - 8).toFixed(1) + '" text-anchor="end">unter ' + grenze + ' %: Druck und Ausspeicherleistung sinken</text>';
     }
     for (var v = 0; v <= 100; v += 10) {
       s += '<line class="gitter' + (v % 50 === 0 ? ' stark' : '') + '" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/>' +
         '<text class="achse" x="' + (L - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end">' + v + ' %</text>';
     }
     s += '<line class="ziel-linie" x1="' + L + '" x2="' + (B - R) + '" y1="' + y(ziel) + '" y2="' + y(ziel) + '"/>' +
-      '<text class="ziel-text" x="' + (B - R) + '" y="' + (y(ziel) - 6) + '" text-anchor="end">Vorgabe zum 1. November: ' + ziel + ' %</text>';
+      '<text class="ziel-text" x="' + (L + 6) + '" y="' + (y(ziel) - 6) + '" text-anchor="start">Vorgabe zum 1. November: ' + ziel + ' %</text>';
 
     // Stichtagsmarken (z. B. Vorgabe zum 1. Februar)
     (verlauf.marken || []).forEach(function (mk) {
@@ -275,7 +297,7 @@
       if (isNaN(t) || t < t0 || t > t1 || !isFinite(mk.prozent)) return;
       var b = 12 * TAG;
       s += '<line class="ziel-linie marke" x1="' + x(new Date(t - b)).toFixed(1) + '" x2="' + x(new Date(+t + b)).toFixed(1) + '" y1="' + y(mk.prozent).toFixed(1) + '" y2="' + y(mk.prozent).toFixed(1) + '"/>' +
-        '<text class="ziel-text klein" x="' + x(t).toFixed(1) + '" y="' + (y(mk.prozent) - 6).toFixed(1) + '" text-anchor="middle">' + esc(mk.text || '') + '</text>';
+        '<text class="ziel-text klein" x="' + (x(new Date(t - b)) - 6).toFixed(1) + '" y="' + (y(mk.prozent) + 4).toFixed(1) + '" text-anchor="end">' + esc(mk.text || '') + '</text>';
     });
 
     var pfad = glattPfad(punkte, x, y);
@@ -287,7 +309,7 @@
     if (vorjahr.length >= 2) {
       s += '<path class="linie vorjahr" d="' + glattPfad(vorjahr, x, y) + '"/>';
       var vl = vorjahr[vorjahr.length - 1];
-      s += '<text class="achse vorjahr-text" x="' + (x(vl.t) - 8).toFixed(1) + '" y="' + (y(vl.v) + 18).toFixed(1) + '" text-anchor="end">Vorjahr ' + fmtZahl(vl.v, 1) + ' %</text>';
+      s += '<text class="achse vorjahr-text" x="' + (x(vl.t) - 10).toFixed(1) + '" y="' + (y(vl.v) + 18).toFixed(1) + '" text-anchor="end">Vorjahr ' + fmtZahl(vl.v, 1) + ' %</text>';
     }
     s += '<path class="linie" d="' + pfad + '"/>';
 
@@ -311,7 +333,9 @@
         '<text class="letzter tief" x="' + x(tief.t).toFixed(1) + '" y="' + (y(tief.v) + 22).toFixed(1) + '" text-anchor="middle">Tiefstand ' + fmtZahl(tief.v, 1) + ' % (' + esc(tief.t.toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })) + ')</text>';
     }
     var letzter = punkte[punkte.length - 1];
-    s += '<text class="letzter" x="' + (x(t1) - 8).toFixed(1) + '" y="' + (y(letzter.v) - 10).toFixed(1) + '" text-anchor="end">' + fmtZahl(letzter.v, 1) + ' %</text>';
+    var vorjahrWert = vorjahr.length ? vorjahr[vorjahr.length - 1].v : null;
+    var unten = vorjahrWert !== null && vorjahrWert > letzter.v; // Vorjahr liegt darüber: eigenen Wert unter die Linie setzen
+    s += '<text class="letzter" x="' + (x(t1) - 10).toFixed(1) + '" y="' + (unten ? y(letzter.v) + 22 : y(letzter.v) - 12).toFixed(1) + '" text-anchor="end">heute ' + fmtZahl(letzter.v, 1) + ' %</text>';
     s += '</svg>';
     ziel_el.innerHTML = s;
     setText('#verlauf-quelle', (vorjahr.length >= 2 ? 'Blau: Saison ' + t0.getFullYear() + '/' + String(t1.getFullYear()).slice(2) + '. Grau gestrichelt: die Saison davor, auf dieselben Kalendertage gelegt. ' : '') +
@@ -339,7 +363,7 @@
 
     var fuellstandAm = interpolator(punkte);
     var noetig = [];
-    for (var t = new Date(punkte[0].t); t <= heute; t = new Date(t.getTime() + TAG)) {
+    for (var t = nurDatum(punkte[0].t); t <= heute; t = naechsterTag(t)) {
       var rest = Math.round((zielDatum - t) / TAG); if (rest <= 0) break;
       noetig.push({ t: t, w: Math.max(0, (ziel - fuellstandAm(t)) / rest) });
     }
@@ -527,7 +551,7 @@
     // Kurve seit dem Tiefstand
     var tief = 0; punkte.forEach(function (p, i) { if (p.v < punkte[tief].v) tief = i; });
     var reihe = [];
-    for (var t = new Date(punkte[tief].t); t <= heute; t = new Date(t.getTime() + TAG)) reihe.push({ t: t, m: fuerTag(t).mangel });
+    for (var t = nurDatum(punkte[tief].t); t <= heute; t = naechsterTag(t)) reihe.push({ t: t, m: fuerTag(t).mangel });
     var el = $('#risiko-diagramm');
     if (!el || reihe.length < 2) return;
     var B = 640, H = 280, L = 52, R = 16, O = 20, U = 36;
