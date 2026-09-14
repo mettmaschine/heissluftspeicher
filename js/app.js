@@ -233,7 +233,11 @@
         var start = String(verlauf.punkte.map(function (p) { return p.datum; }).sort()[0]).slice(0, 10);
         var startVorjahr = (Number(start.slice(0, 4)) - 1) + start.slice(4);
         var aktuell = live.punkte.filter(function (p) { return p.datum >= start; });
-        var vorjahr = live.punkte.filter(function (p) { return p.datum >= startVorjahr && p.datum < start; });
+        // Die Vorjahreslinie reicht bis zum gleichen Kalendertag wie der letzte aktuelle Wert (ein Jahr früher),
+        // damit „Vorjahr“ im Diagramm und „Vor einem Jahr“ in der Rechnung dieselbe Zahl zeigen.
+        var letzterAktuell = aktuell.length ? aktuell[aktuell.length - 1].datum : start;
+        var endeVorjahr = (Number(letzterAktuell.slice(0, 4)) - 1) + letzterAktuell.slice(4);
+        var vorjahr = live.punkte.filter(function (p) { return p.datum >= startVorjahr && p.datum <= endeVorjahr; });
         if (aktuell.length >= 30) {
           verlauf.punkte = aktuell;
           if (vorjahr.length >= 30) verlauf.vorjahr = vorjahr;
